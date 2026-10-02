@@ -27,6 +27,9 @@ const fileNameElement =
 const analyzeButton =
     document.getElementById("analyzeButton");
 
+const analysisScreen =
+    document.getElementById("analysisScreen");
+
 const statusElement =
     document.getElementById("status");
 
@@ -290,6 +293,36 @@ async function analyzeReport() {
 
         return;
     }
+
+    // Show the full-screen AI analysis experience
+     if (analysisScreen) {
+         analysisScreen.classList.add("active");
+         document.body.classList.add("analysis-active");
+    }
+
+    // Animate the analysis stages while the AI is working
+    const stages = document.querySelectorAll("#analysisScreen .stage");
+
+    stages.forEach((stage) => {
+    stage.classList.remove("active", "done");
+    });
+
+    let currentStage = 0;
+
+    const stageTimer = setInterval(() => {
+    if (currentStage > 0) {
+        stages[currentStage - 1]?.classList.remove("active");
+        stages[currentStage - 1]?.classList.add("done");
+    }
+
+    if (currentStage < stages.length) {
+        stages[currentStage]?.classList.add("active");
+        currentStage++;
+    } else {
+        clearInterval(stageTimer);
+    }
+    
+    }, 1800);
 
 
     // -----------------------------------------------------
