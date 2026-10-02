@@ -1,0 +1,12 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Environment / secrets
+.env
+
+# Local / generated medical data
+images/
+user_context.json
+verified_report.json

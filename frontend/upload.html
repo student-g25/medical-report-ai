@@ -1,0 +1,1516 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Medify — Upload Report</title>
+
+    <style>
+        /* =========================================================
+           RESET
+        ========================================================= */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family:
+                Inter,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+
+            color: #14213d;
+
+            background:
+                radial-gradient(
+                    circle at 8% 25%,
+                    rgba(101, 92, 246, 0.13),
+                    transparent 28%
+                ),
+                radial-gradient(
+                    circle at 92% 35%,
+                    rgba(49, 190, 185, 0.12),
+                    transparent 28%
+                ),
+                linear-gradient(
+                    135deg,
+                    #f7f8fc 0%,
+                    #f5f8fc 48%,
+                    #f1f8f8 100%
+                );
+
+            transition:
+                background 0.4s ease,
+                color 0.4s ease;
+        }
+
+        button,
+        input,
+        select {
+            font: inherit;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+
+        /* =========================================================
+           NAVBAR
+        ========================================================= */
+
+        .navbar {
+            position: sticky;
+            top: 18px;
+            z-index: 1000;
+
+            width: calc(100% - 48px);
+            max-width: 1440px;
+
+            margin: 18px auto 0;
+
+            border: 1px solid rgba(255, 255, 255, 0.72);
+
+            background:
+                rgba(255, 255, 255, 0.66);
+
+            backdrop-filter: blur(22px);
+            -webkit-backdrop-filter: blur(22px);
+
+            box-shadow:
+                0 12px 40px rgba(30, 43, 80, 0.08);
+
+            border-radius: 22px;
+        }
+
+        .nav-container {
+            min-height: 82px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 26px;
+        }
+
+
+        /* =========================================================
+           LOGO
+        ========================================================= */
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+
+            font-size: 26px;
+            font-weight: 800;
+
+            color: #14213d;
+
+            transition:
+                transform 0.25s ease,
+                opacity 0.25s ease;
+        }
+
+        .logo:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+        .logo-mark {
+            width: 52px;
+            height: 52px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 17px;
+
+            font-size: 32px;
+            font-weight: 400;
+
+            color: white;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #5966e9,
+                    #36b7b2
+                );
+
+            box-shadow:
+                0 12px 28px rgba(86, 99, 230, 0.28);
+        }
+
+        .logo-text span {
+            background:
+                linear-gradient(
+                    90deg,
+                    #5966e9,
+                    #35aeb6
+                );
+
+            -webkit-background-clip: text;
+            background-clip: text;
+
+            color: transparent;
+        }
+
+
+        /* =========================================================
+           NAVIGATION
+        ========================================================= */
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 34px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 38px;
+        }
+
+        .nav-links a {
+            position: relative;
+
+            font-size: 16px;
+            font-weight: 500;
+
+            color: #52627e;
+
+            transition:
+                color 0.25s ease,
+                transform 0.25s ease;
+        }
+
+        .nav-links a::after {
+            content: "";
+
+            position: absolute;
+
+            left: 0;
+            bottom: -7px;
+
+            width: 0;
+            height: 2px;
+
+            border-radius: 10px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #5966e9,
+                    #36b7b2
+                );
+
+            transition: width 0.25s ease;
+        }
+
+        .nav-links a:hover {
+            color: #182642;
+            transform: translateY(-1px);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+
+        /* =========================================================
+           THEME TOGGLE
+        ========================================================= */
+
+        .theme-toggle {
+            width: 48px;
+            height: 48px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border: 1px solid rgba(89, 102, 233, 0.15);
+
+            border-radius: 15px;
+
+            cursor: pointer;
+
+            color: #5364e8;
+
+            background:
+                rgba(255, 255, 255, 0.72);
+
+            backdrop-filter: blur(12px);
+
+            transition:
+                transform 0.25s ease,
+                background 0.25s ease;
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-2px) rotate(5deg);
+
+            background:
+                rgba(255, 255, 255, 0.95);
+        }
+
+        .sun-icon {
+            font-size: 21px;
+        }
+
+        .moon-icon {
+            display: none;
+            font-size: 23px;
+        }
+
+
+        /* =========================================================
+           MAIN
+        ========================================================= */
+
+        .upload-main {
+            width: min(1180px, calc(100% - 40px));
+
+            margin: 0 auto;
+
+            padding:
+                100px 0
+                70px;
+        }
+
+
+        /* =========================================================
+           PAGE HEADING
+        ========================================================= */
+
+        .upload-page-heading {
+            max-width: 780px;
+
+            margin: 0 auto 58px;
+
+            text-align: center;
+
+            animation:
+                fadeUp 0.8s ease both;
+        }
+
+        .section-label {
+            display: inline-block;
+
+            margin-bottom: 18px;
+
+            font-size: 12px;
+            font-weight: 800;
+
+            letter-spacing: 2px;
+
+            color: #5966e9;
+        }
+
+        .upload-page-heading h1 {
+            font-size:
+                clamp(42px, 6vw, 72px);
+
+            line-height: 1.02;
+
+            letter-spacing: -3px;
+
+            font-weight: 800;
+
+            color: #101c35;
+        }
+
+        .upload-page-heading h1 span {
+            background:
+                linear-gradient(
+                    90deg,
+                    #5966e9,
+                    #3db1b8
+                );
+
+            -webkit-background-clip: text;
+            background-clip: text;
+
+            color: transparent;
+        }
+
+        .upload-page-heading p {
+            max-width: 680px;
+
+            margin: 24px auto 0;
+
+            font-size: 18px;
+            line-height: 1.7;
+
+            color: #71819d;
+        }
+
+
+        /* =========================================================
+           MAIN GLASS CARD
+        ========================================================= */
+
+        .upload-app-card {
+            position: relative;
+
+            padding: 42px;
+
+            border:
+                1px solid
+                rgba(255, 255, 255, 0.82);
+
+            border-radius: 34px;
+
+            background:
+                rgba(255, 255, 255, 0.60);
+
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+
+            box-shadow:
+                0 30px 80px rgba(42, 56, 91, 0.10),
+                inset 0 1px 0 rgba(255, 255, 255, 0.85);
+
+            animation:
+                fadeUp 0.9s 0.1s ease both;
+        }
+
+        .upload-app-card::before {
+            content: "";
+
+            position: absolute;
+
+            top: -100px;
+            left: -100px;
+
+            width: 220px;
+            height: 220px;
+
+            border-radius: 50%;
+
+            background:
+                rgba(99, 103, 235, 0.10);
+
+            filter: blur(50px);
+
+            pointer-events: none;
+        }
+
+
+        /* =========================================================
+           PROGRESS
+        ========================================================= */
+
+        .upload-progress {
+            display: flex;
+            align-items: center;
+
+            margin-bottom: 42px;
+        }
+
+        .progress-step {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+
+            white-space: nowrap;
+
+            font-size: 14px;
+            font-weight: 600;
+
+            color: #8795ad;
+        }
+
+        .progress-step span {
+            width: 30px;
+            height: 30px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 50%;
+
+            font-size: 12px;
+
+            background:
+                rgba(225, 231, 242, 0.8);
+
+            color: #71809a;
+        }
+
+        .progress-step.active {
+            color: #5966e9;
+        }
+
+        .progress-step.active span {
+            color: white;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #5966e9,
+                    #3eafd2
+                );
+
+            box-shadow:
+                0 8px 20px rgba(89, 102, 233, 0.25);
+        }
+
+        .progress-line {
+            flex: 1;
+
+            height: 1px;
+
+            margin: 0 18px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    rgba(89, 102, 233, 0.28),
+                    rgba(120, 140, 170, 0.12)
+                );
+        }
+
+
+        /* =========================================================
+           UPLOAD AREA
+        ========================================================= */
+
+        .upload-area {
+            min-height: 390px;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+            padding: 50px 30px;
+
+            text-align: center;
+
+            border:
+                1.5px dashed
+                rgba(89, 102, 233, 0.35);
+
+            border-radius: 28px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(250, 251, 255, 0.72),
+                    rgba(240, 249, 249, 0.48)
+                );
+
+            transition:
+                border-color 0.3s ease,
+                background 0.3s ease,
+                transform 0.3s ease;
+        }
+
+        .upload-area:hover {
+            border-color:
+                rgba(89, 102, 233, 0.65);
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255, 255, 255, 0.86),
+                    rgba(240, 250, 250, 0.70)
+                );
+
+            transform: translateY(-2px);
+        }
+
+        .upload-icon-wrapper {
+            margin-bottom: 20px;
+        }
+
+        .upload-icon {
+            width: 74px;
+            height: 74px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 24px;
+
+            font-size: 38px;
+
+            color: white;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #5966e9,
+                    #3ab7b2
+                );
+
+            box-shadow:
+                0 18px 35px
+                rgba(89, 102, 233, 0.25);
+        }
+
+        .upload-area h2 {
+            margin-bottom: 10px;
+
+            font-size: 28px;
+
+            color: #15213b;
+        }
+
+        .upload-area > p {
+            color: #8290a8;
+        }
+
+        .browse-button {
+            margin-top: 22px;
+
+            padding: 13px 25px;
+
+            border-radius: 13px;
+
+            font-size: 15px;
+            font-weight: 700;
+
+            color: white;
+
+            cursor: pointer;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #5966e9,
+                    #3d9fca
+                );
+
+            box-shadow:
+                0 12px 25px
+                rgba(89, 102, 233, 0.22);
+
+            transition:
+                transform 0.25s ease,
+                box-shadow 0.25s ease;
+        }
+
+        .browse-button:hover {
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 16px 32px
+                rgba(89, 102, 233, 0.30);
+        }
+
+        .file-name {
+            margin-top: 16px;
+
+            font-size: 14px;
+
+            color: #596a86;
+        }
+
+        .upload-limit {
+            margin-top: 8px;
+
+            font-size: 13px;
+
+            color: #9aa6ba;
+        }
+
+
+        /* =========================================================
+           PATIENT INFORMATION
+        ========================================================= */
+
+        .details-section {
+            margin-top: 52px;
+        }
+
+        .mini-label {
+            display: block;
+
+            margin-bottom: 9px;
+
+            font-size: 12px;
+            font-weight: 800;
+
+            letter-spacing: 1.8px;
+
+            color: #5966e9;
+        }
+
+        .details-heading h3 {
+            font-size: 30px;
+
+            color: #15213b;
+        }
+
+        .details-heading p {
+            margin-top: 8px;
+
+            color: #8190aa;
+
+            font-size: 15px;
+        }
+
+        .form-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 24px;
+
+            margin-top: 30px;
+        }
+
+        .form-group label {
+            display: block;
+
+            margin-bottom: 10px;
+
+            font-size: 14px;
+            font-weight: 700;
+
+            color: #263550;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+
+            height: 58px;
+
+            padding: 0 18px;
+
+            border:
+                1px solid
+                rgba(137, 151, 178, 0.18);
+
+            border-radius: 16px;
+
+            outline: none;
+
+            color: #192640;
+
+            background:
+                rgba(255, 255, 255, 0.62);
+
+            backdrop-filter: blur(12px);
+
+            transition:
+                border-color 0.25s ease,
+                box-shadow 0.25s ease,
+                background 0.25s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color:
+                rgba(89, 102, 233, 0.55);
+
+            background:
+                rgba(255, 255, 255, 0.90);
+
+            box-shadow:
+                0 0 0 4px
+                rgba(89, 102, 233, 0.08);
+        }
+
+
+        /* =========================================================
+           ANALYZE BUTTON
+        ========================================================= */
+
+        .analyze-button {
+            width: 100%;
+
+            height: 66px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 18px;
+
+            margin-top: 30px;
+
+            border: none;
+
+            border-radius: 20px;
+
+            cursor: pointer;
+
+            font-size: 17px;
+            font-weight: 750;
+
+            color: white;
+
+            background:
+                linear-gradient(
+                    100deg,
+                    #18243e,
+                    #243457
+                );
+
+            box-shadow:
+                0 20px 35px
+                rgba(20, 33, 61, 0.18);
+
+            transition:
+                transform 0.25s ease,
+                box-shadow 0.25s ease;
+        }
+
+        .analyze-button span {
+            font-size: 24px;
+
+            transition:
+                transform 0.25s ease;
+        }
+
+        .analyze-button:hover {
+            transform: translateY(-3px);
+
+            box-shadow:
+                0 25px 45px
+                rgba(20, 33, 61, 0.24);
+        }
+
+        .analyze-button:hover span {
+            transform: translateX(5px);
+        }
+
+
+        /* =========================================================
+           STATUS
+        ========================================================= */
+
+        .status {
+            min-height: 24px;
+
+            margin-top: 18px;
+
+            text-align: center;
+
+            font-size: 14px;
+
+            color: #159b91;
+        }
+
+
+        /* =========================================================
+           MEDICAL NOTICE
+        ========================================================= */
+
+        .medical-notice {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+
+            max-width: 800px;
+
+            margin: 30px auto 0;
+
+            padding: 18px 22px;
+
+            border:
+                1px solid
+                rgba(89, 102, 233, 0.10);
+
+            border-radius: 18px;
+
+            background:
+                rgba(255, 255, 255, 0.45);
+
+            backdrop-filter: blur(14px);
+
+            color: #75839c;
+
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .notice-icon {
+            flex: 0 0 auto;
+
+            width: 30px;
+            height: 30px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 50%;
+
+            color: #5966e9;
+
+            background:
+                rgba(89, 102, 233, 0.10);
+
+            font-weight: 800;
+        }
+
+
+        /* =========================================================
+           ANIMATIONS
+        ========================================================= */
+
+        @keyframes fadeUp {
+
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+        }
+
+
+        /* =========================================================
+           DARK MODE
+        ========================================================= */
+
+        body.dark {
+            color: #edf2ff;
+
+            background:
+                radial-gradient(
+                    circle at 8% 25%,
+                    rgba(95, 87, 240, 0.22),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 92% 35%,
+                    rgba(43, 183, 178, 0.15),
+                    transparent 30%
+                ),
+                linear-gradient(
+                    135deg,
+                    #0c1221,
+                    #111a2d 50%,
+                    #0b171c
+                );
+        }
+
+        body.dark .navbar {
+            border-color:
+                rgba(255, 255, 255, 0.08);
+
+            background:
+                rgba(17, 25, 43, 0.72);
+
+            box-shadow:
+                0 15px 45px rgba(0, 0, 0, 0.25);
+        }
+
+        body.dark .logo {
+            color: #f2f5ff;
+        }
+
+        body.dark .nav-links a {
+            color: #aebbd3;
+        }
+
+        body.dark .nav-links a:hover {
+            color: white;
+        }
+
+        body.dark .theme-toggle {
+            border-color:
+                rgba(255, 255, 255, 0.08);
+
+            color: #aab6ff;
+
+            background:
+                rgba(255, 255, 255, 0.07);
+        }
+
+        body.dark .sun-icon {
+            display: none;
+        }
+
+        body.dark .moon-icon {
+            display: block;
+        }
+
+        body.dark .upload-page-heading h1 {
+            color: #f5f7ff;
+        }
+
+        body.dark .upload-page-heading p {
+            color: #a3b0c7;
+        }
+
+        body.dark .upload-app-card {
+            border-color:
+                rgba(255, 255, 255, 0.08);
+
+            background:
+                rgba(19, 28, 47, 0.64);
+
+            box-shadow:
+                0 30px 80px
+                rgba(0, 0, 0, 0.30);
+        }
+
+        body.dark .upload-area {
+            border-color:
+                rgba(105, 117, 235, 0.40);
+
+            background:
+                rgba(25, 35, 57, 0.56);
+        }
+
+        body.dark .upload-area:hover {
+            background:
+                rgba(30, 42, 67, 0.72);
+        }
+
+        body.dark .upload-area h2,
+        body.dark .details-heading h3 {
+            color: #f0f4ff;
+        }
+
+        body.dark .upload-area > p,
+        body.dark .details-heading p {
+            color: #9aa9c4;
+        }
+
+        body.dark .progress-step {
+            color: #71819d;
+        }
+
+        body.dark .progress-step.active {
+            color: #9ca7ff;
+        }
+
+        body.dark .progress-step span {
+            color: #9eabc2;
+
+            background:
+                rgba(255, 255, 255, 0.08);
+        }
+
+        body.dark .form-group label {
+            color: #c7d1e5;
+        }
+
+        body.dark .form-group input,
+        body.dark .form-group select {
+            color: #edf2ff;
+
+            border-color:
+                rgba(255, 255, 255, 0.08);
+
+            background:
+                rgba(255, 255, 255, 0.06);
+        }
+
+        body.dark .form-group input::placeholder {
+            color: #7787a2;
+        }
+
+        body.dark .form-group input:focus,
+        body.dark .form-group select:focus {
+            background:
+                rgba(255, 255, 255, 0.09);
+        }
+
+        body.dark .medical-notice {
+            border-color:
+                rgba(255, 255, 255, 0.07);
+
+            background:
+                rgba(255, 255, 255, 0.04);
+
+            color: #8e9db8;
+        }
+
+
+        /* =========================================================
+           MOBILE
+        ========================================================= */
+
+        @media (max-width: 800px) {
+
+            .navbar {
+                width: calc(100% - 24px);
+
+                top: 10px;
+
+                margin-top: 10px;
+
+                border-radius: 18px;
+            }
+
+            .nav-container {
+                min-height: 70px;
+
+                padding: 0 16px;
+            }
+
+            .logo {
+                font-size: 21px;
+            }
+
+            .logo-mark {
+                width: 43px;
+                height: 43px;
+
+                border-radius: 14px;
+
+                font-size: 27px;
+            }
+
+            .nav-links {
+                gap: 14px;
+            }
+
+            .nav-links a {
+                display: none;
+            }
+
+            .theme-toggle {
+                width: 43px;
+                height: 43px;
+            }
+
+            .upload-main {
+                width: calc(100% - 24px);
+
+                padding-top: 70px;
+            }
+
+            .upload-page-heading {
+                margin-bottom: 40px;
+            }
+
+            .upload-page-heading h1 {
+                letter-spacing: -1.5px;
+            }
+
+            .upload-page-heading p {
+                font-size: 16px;
+            }
+
+            .upload-app-card {
+                padding: 22px;
+
+                border-radius: 26px;
+            }
+
+            .upload-progress {
+                display: none;
+            }
+
+            .upload-area {
+                min-height: 330px;
+
+                padding: 35px 18px;
+
+                border-radius: 22px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .medical-notice {
+                align-items: flex-start;
+            }
+
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+    <!-- =========================================================
+         NAVBAR
+    ========================================================== -->
+
+    <header class="navbar">
+
+        <div class="nav-container">
+
+            <!-- Clicking logo returns to landing page -->
+            <a
+                href="index.html"
+                class="logo"
+                aria-label="Medify home"
+            >
+
+                <div class="logo-mark">
+                    +
+                </div>
+
+                <div class="logo-text">
+                    Med<span>ify</span>
+                </div>
+
+            </a>
+
+
+            <div class="nav-right">
+
+                <!-- NO UPLOAD REPORT BUTTON HERE -->
+                <nav class="nav-links">
+
+                    <a href="index.html">
+                        Home
+                    </a>
+
+                    <a href="index.html#how-it-works">
+                        How it works
+                    </a>
+
+                    <a href="index.html#features">
+                        Features
+                    </a>
+
+                </nav>
+
+
+                <!-- Theme toggle -->
+                <button
+                    class="theme-toggle"
+                    id="themeToggle"
+                    type="button"
+                    aria-label="Toggle dark mode"
+                >
+
+                    <span class="sun-icon">
+                        ☀
+                    </span>
+
+                    <span class="moon-icon">
+                        ☾
+                    </span>
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =========================================================
+         MAIN CONTENT
+    ========================================================== -->
+
+    <main class="upload-main">
+
+
+        <!-- PAGE INTRO -->
+
+        <section class="upload-page-heading">
+
+            <span class="section-label">
+                MEDICAL REPORT ANALYSIS
+            </span>
+
+            <h1>
+                Turn your report into
+                <span>understanding.</span>
+            </h1>
+
+            <p>
+                Upload your medical report and let Medify
+                organize the information into clear,
+                easy-to-understand insights.
+            </p>
+
+        </section>
+
+
+
+        <!-- MAIN APPLICATION CARD -->
+
+        <section class="upload-app-card">
+
+
+            <!-- PROGRESS -->
+
+            <div class="upload-progress">
+
+                <div class="progress-step active">
+
+                    <span>
+                        01
+                    </span>
+
+                    Upload
+
+                </div>
+
+
+                <div class="progress-line"></div>
+
+
+                <div class="progress-step">
+
+                    <span>
+                        02
+                    </span>
+
+                    Analyze
+
+                </div>
+
+
+                <div class="progress-line"></div>
+
+
+                <div class="progress-step">
+
+                    <span>
+                        03
+                    </span>
+
+                    Understand
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 UPLOAD AREA
+
+                 IMPORTANT:
+                 Keep your existing file input if app.js
+                 already references a different ID.
+            ================================================== -->
+
+            <div
+                class="upload-area"
+                id="uploadArea"
+            >
+
+                <div class="upload-icon-wrapper">
+
+                    <div class="upload-icon">
+                        ↑
+                    </div>
+
+                </div>
+
+
+                <h2>
+                    Upload your report
+                </h2>
+
+
+                <p>
+                    Drag and drop your report here
+                </p>
+
+
+                <!-- Hidden file input -->
+
+                <input
+                    type="file"
+                    id="fileInput"
+                    accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                    hidden
+                >
+
+
+                <label
+                    for="fileInput"
+                    class="browse-button"
+                >
+                    Browse files
+                </label>
+
+
+                <p
+                    class="file-name"
+                    id="fileName"
+                >
+                    No file selected
+                </p>
+
+
+                <p class="upload-limit">
+                    JPG, PNG or WEBP · Maximum 10 MB
+                </p>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 PATIENT INFORMATION
+            ================================================== -->
+
+            <section class="details-section">
+
+                <div class="details-heading">
+
+                    <span class="mini-label">
+                        OPTIONAL
+                    </span>
+
+                    <h3>
+                        Patient information
+                    </h3>
+
+                    <p>
+                        Leave these fields empty if the
+                        information is already present in the report.
+                    </p>
+
+                </div>
+
+
+                <div class="form-grid">
+
+
+                    <!-- AGE -->
+
+                    <div class="form-group">
+
+                        <label for="age">
+                            Age
+                        </label>
+
+                        <input
+                            id="age"
+                            type="number"
+                            min="0"
+                            max="120"
+                            placeholder="Enter age"
+                        >
+
+                    </div>
+
+
+                    <!-- SEX -->
+
+                    <div class="form-group">
+
+                        <label for="sex">
+                            Sex
+                        </label>
+
+                        <select id="sex">
+
+                            <option value="">
+                                Select
+                            </option>
+
+                            <option value="Male">
+                                Male
+                            </option>
+
+                            <option value="Female">
+                                Female
+                            </option>
+
+                            <option value="Other">
+                                Other
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- ANALYZE -->
+
+                <button
+                    id="analyzeButton"
+                    class="analyze-button"
+                    type="button"
+                >
+
+                    <span>
+                        Analyze Report
+                    </span>
+
+                    <span>
+                        →
+                    </span>
+
+                </button>
+
+
+                <!-- STATUS -->
+
+                <div
+                    id="status"
+                    class="status"
+                ></div>
+
+            </section>
+
+        </section>
+
+
+
+        <!-- MEDICAL DISCLAIMER -->
+
+        <div class="medical-notice">
+
+            <div class="notice-icon">
+                !
+            </div>
+
+            <p>
+                Medify provides educational information based
+                on the uploaded report. It does not replace
+                professional medical advice, diagnosis,
+                or treatment from a qualified healthcare
+                professional.
+            </p>
+
+        </div>
+
+    </main>
+
+
+    <!-- =========================================================
+         YOUR EXISTING APPLICATION JAVASCRIPT
+    ========================================================== -->
+
+    <script src="app.js"></script>
+
+</body>
+
+</html>
