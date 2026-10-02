@@ -85,20 +85,12 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-
     allow_origins=[
-        "*"
+        "https://medical-report-ai-frontend.vercel.app"
     ],
-
     allow_credentials=False,
-
-    allow_methods=[
-        "*"
-    ],
-
-    allow_headers=[
-        "*"
-    ]
+    allow_methods=["*"],
+    allow_headers=["*"]
 )
 
 
