@@ -6,7 +6,9 @@
 // API CONFIGURATION
 // ---------------------------------------------------------
 
-const API_BASE_URL = "https://medical-report-ai-a6s6.onrender.com";
+const API_BASE_URL =
+    "https://medical-report-ai-a6s6.onrender.com";
+
 
 // ---------------------------------------------------------
 // DOM ELEMENTS
@@ -54,7 +56,10 @@ function initializeTheme() {
         localStorage.getItem("medify-theme");
 
     if (savedTheme === "dark") {
-        document.body.classList.add("dark");
+
+        document.body.classList.add(
+            "dark"
+        );
     }
 }
 
@@ -65,10 +70,14 @@ if (themeToggle) {
         "click",
         function () {
 
-            document.body.classList.toggle("dark");
+            document.body.classList.toggle(
+                "dark"
+            );
 
             const isDark =
-                document.body.classList.contains("dark");
+                document.body.classList.contains(
+                    "dark"
+                );
 
             localStorage.setItem(
                 "medify-theme",
@@ -106,8 +115,10 @@ if (fileInput) {
         "change",
         function () {
 
-            if (!fileInput.files ||
-                fileInput.files.length === 0) {
+            if (
+                !fileInput.files ||
+                fileInput.files.length === 0
+            ) {
 
                 return;
             }
@@ -163,13 +174,17 @@ if (uploadArea) {
             const files =
                 event.dataTransfer.files;
 
-            if (!files ||
-                files.length === 0) {
+            if (
+                !files ||
+                files.length === 0
+            ) {
 
                 return;
             }
 
-            handleFile(files[0]);
+            handleFile(
+                files[0]
+            );
         }
     );
 }
@@ -194,11 +209,15 @@ function handleFile(file) {
         "image/jpeg",
         "image/jpg",
         "image/png",
-        "image/webp",
+        "image/webp"
     ];
 
 
-    if (!allowedTypes.includes(file.type)) {
+    if (
+        !allowedTypes.includes(
+            file.type
+        )
+    ) {
 
         showStatus(
             "Please upload a JPG, PNG, WEBP image.",
@@ -212,15 +231,19 @@ function handleFile(file) {
     // -----------------------------------------------------
     // FILE SIZE CHECK
     // -----------------------------------------------------
+    //
+    // Backend limit is 10 MB.
+    // Keep frontend validation consistent.
+    //
 
     const maxSize =
-        20 * 1024 * 1024;
+        10 * 1024 * 1024;
 
 
     if (file.size > maxSize) {
 
         showStatus(
-            "The file must be smaller than 20 MB.",
+            "The file must be smaller than 10 MB.",
             "error"
         );
 
@@ -275,6 +298,257 @@ if (analyzeButton) {
 
 
 // =========================================================
+// ANALYSIS STAGE CONTROLLER
+// =========================================================
+//
+// Backend stage names:
+//
+// extract
+// understand
+// analyze
+// prepare
+//
+// The backend sends:
+//
+// active
+// complete
+//
+// This function converts those events into the visual
+// four-card timeline.
+//
+
+function updateAnalysisStage(
+    stages,
+    stageName,
+    status
+) {
+
+    if (
+        !stages ||
+        stages.length === 0
+    ) {
+
+        return;
+    }
+
+
+    const stageOrder = [
+        "extract",
+        "understand",
+        "analyze",
+        "prepare"
+    ];
+
+
+    const currentIndex =
+        stageOrder.indexOf(
+            stageName
+        );
+
+
+    if (currentIndex === -1) {
+
+        console.warn(
+            "Unknown analysis stage:",
+            stageName
+        );
+
+        return;
+    }
+
+
+    stages.forEach(
+        function (stage, index) {
+
+            stage.classList.remove(
+                "active",
+                "done"
+            );
+
+
+            // -------------------------------------------------
+            // PREVIOUS STAGES
+            // -------------------------------------------------
+
+            if (index < currentIndex) {
+
+                stage.classList.add(
+                    "done"
+                );
+
+                return;
+            }
+
+
+            // -------------------------------------------------
+            // CURRENT ACTIVE STAGE
+            // -------------------------------------------------
+
+            if (
+                index === currentIndex &&
+                status === "active"
+            ) {
+
+                stage.classList.add(
+                    "active"
+                );
+
+                return;
+            }
+
+
+            // -------------------------------------------------
+            // CURRENT COMPLETED STAGE
+            // -------------------------------------------------
+
+            if (
+                index === currentIndex &&
+                status === "complete"
+            ) {
+
+                stage.classList.add(
+                    "done"
+                );
+            }
+        }
+    );
+}
+
+
+// =========================================================
+// RESET ANALYSIS STAGES
+// =========================================================
+
+function resetAnalysisStages(stages) {
+
+    if (
+        !stages ||
+        stages.length === 0
+    ) {
+
+        return;
+    }
+
+
+    stages.forEach(
+        function (stage) {
+
+            stage.classList.remove(
+                "active",
+                "done"
+            );
+        }
+    );
+
+
+    // First stage starts immediately.
+    stages[0]?.classList.add(
+        "active"
+    );
+}
+
+
+// =========================================================
+// PROCESS ONE STREAM EVENT
+// =========================================================
+//
+// Every backend line is a JSON object.
+//
+// Example:
+//
+// {
+//     "type": "stage",
+//     "stage": "extract",
+//     "status": "active"
+// }
+//
+// or:
+//
+// {
+//     "type": "complete",
+//     "data": {...}
+// }
+//
+
+function processAnalysisEvent(
+    event,
+    stages
+) {
+
+    if (
+        !event ||
+        typeof event !== "object"
+    ) {
+
+        return null;
+    }
+
+
+    // -----------------------------------------------------
+    // ERROR EVENT
+    // -----------------------------------------------------
+
+    if (
+        event.type === "error"
+    ) {
+
+        throw new Error(
+            event.message ||
+            "The medical report could not be analyzed."
+        );
+    }
+
+
+    // -----------------------------------------------------
+    // STAGE EVENT
+    // -----------------------------------------------------
+
+    if (
+        event.type === "stage"
+    ) {
+
+        updateAnalysisStage(
+            stages,
+            event.stage,
+            event.status
+        );
+
+
+        console.log(
+            "Analysis stage:",
+            event.stage,
+            event.status
+        );
+
+
+        return null;
+    }
+
+
+    // -----------------------------------------------------
+    // FINAL EVENT
+    // -----------------------------------------------------
+
+    if (
+        event.type === "complete"
+    ) {
+
+        updateAnalysisStage(
+            stages,
+            "prepare",
+            "complete"
+        );
+
+
+        return event.data || null;
+    }
+
+
+    return null;
+}
+
+
+// =========================================================
 // ANALYZE REPORT
 // =========================================================
 
@@ -294,42 +568,54 @@ async function analyzeReport() {
         return;
     }
 
-    // Show the full-screen AI analysis experience
-     if (analysisScreen) {
-         analysisScreen.classList.add("active");
-         document.body.classList.add("analysis-active");
+
+    // -----------------------------------------------------
+    // ANALYSIS SCREEN
+    // -----------------------------------------------------
+
+    if (analysisScreen) {
+
+        analysisScreen.classList.add(
+            "active"
+        );
+
+        document.body.classList.add(
+            "analysis-active"
+        );
+
+        analysisScreen.setAttribute(
+            "aria-busy",
+            "true"
+        );
     }
 
-    // Animate the analysis stages while the AI is working
-    const stages = document.querySelectorAll("#analysisScreen .stage");
 
-    stages.forEach((stage) => {
-    stage.classList.remove("active", "done");
-    });
+    // -----------------------------------------------------
+    // GET ANALYSIS STAGES
+    // -----------------------------------------------------
 
-    let currentStage = 0;
+    const stages =
+        document.querySelectorAll(
+            "#analysisScreen .stage"
+        );
 
-    const stageTimer = setInterval(() => {
-    if (currentStage > 0) {
-        stages[currentStage - 1]?.classList.remove("active");
-        stages[currentStage - 1]?.classList.add("done");
-    }
 
-    if (currentStage < stages.length) {
-        stages[currentStage]?.classList.add("active");
-        currentStage++;
-    } else {
-        clearInterval(stageTimer);
-    }
-    
-    }, 1800);
+    // -----------------------------------------------------
+    // RESET STAGES
+    // -----------------------------------------------------
+
+    resetAnalysisStages(
+        stages
+    );
 
 
     // -----------------------------------------------------
     // DISABLE BUTTON
     // -----------------------------------------------------
 
-    analyzeButton.disabled = true;
+    analyzeButton.disabled =
+        true;
+
 
     const originalButtonHTML =
         analyzeButton.innerHTML;
@@ -342,7 +628,7 @@ async function analyzeReport() {
 
 
     showStatus(
-        "Uploading and analyzing your report...",
+        "Reading your medical report...",
         "loading"
     );
 
@@ -354,6 +640,7 @@ async function analyzeReport() {
     const formData =
         new FormData();
 
+
     formData.append(
         "file",
         selectedFile
@@ -362,9 +649,9 @@ async function analyzeReport() {
 
     try {
 
-        // -------------------------------------------------
+        // =================================================
         // SEND TO BACKEND
-        // -------------------------------------------------
+        // =================================================
 
         const response =
             await fetch(
@@ -376,91 +663,340 @@ async function analyzeReport() {
             );
 
 
-        // -------------------------------------------------
-        // READ RESPONSE
-        // -------------------------------------------------
-
-        let result;
-
-        try {
-
-            result =
-                await response.json();
-
-        } catch (jsonError) {
-
-            throw new Error(
-                "The server returned an invalid response."
-            );
-        }
-
-
-        // -------------------------------------------------
-        // BACKEND ERROR
-        // -------------------------------------------------
+        // =================================================
+        // HTTP ERROR
+        // =================================================
 
         if (!response.ok) {
 
-            const backendMessage =
-                result?.detail ||
-                result?.message ||
+            let errorMessage =
                 "The report could not be analyzed.";
 
+
+            try {
+
+                const errorText =
+                    await response.text();
+
+
+                if (errorText) {
+
+                    try {
+
+                        const errorJSON =
+                            JSON.parse(
+                                errorText
+                            );
+
+
+                        errorMessage =
+                            errorJSON?.detail ||
+                            errorJSON?.message ||
+                            errorMessage;
+
+                    } catch (_) {
+
+                        errorMessage =
+                            errorText;
+                    }
+                }
+
+            } catch (_) {
+
+                // Keep default message.
+            }
+
+
             throw new Error(
-                backendMessage
+                errorMessage
             );
         }
 
 
-        // -------------------------------------------------
-        // BASIC RESPONSE VALIDATION
-        // -------------------------------------------------
+        // =================================================
+        // STREAM SUPPORT CHECK
+        // =================================================
 
-        if (!result ||
-            typeof result !== "object") {
+        if (!response.body) {
 
             throw new Error(
-                "The backend returned an empty result."
+                "The browser could not read the streamed analysis response."
             );
         }
 
 
-        // -------------------------------------------------
-        // SAVE COMPLETE BACKEND RESPONSE
-        // -------------------------------------------------
-        //
-        // IMPORTANT:
-        //
-        // We do NOT modify the backend response.
-        //
-        // The complete JSON returned by FastAPI is stored
-        // temporarily in sessionStorage.
-        //
-        // results.html will read this data and dynamically
-        // create the explanatory report.
-        // -------------------------------------------------
+        // =================================================
+        // CREATE STREAM READER
+        // =================================================
 
-        sessionStorage.setItem(
-            "medifyReport",
-            JSON.stringify(result)
+        const reader =
+            response.body.getReader();
+
+
+        const decoder =
+            new TextDecoder(
+                "utf-8"
+            );
+
+
+        let buffer = "";
+
+        let finalResult = null;
+
+
+        // =================================================
+        // READ STREAM
+        // =================================================
+
+        while (true) {
+
+            const {
+                value,
+                done
+            } =
+                await reader.read();
+
+
+            // -------------------------------------------------
+            // STREAM FINISHED
+            // -------------------------------------------------
+
+            if (done) {
+                break;
+            }
+
+
+            // -------------------------------------------------
+            // DECODE CHUNK
+            // -------------------------------------------------
+
+            buffer +=
+                decoder.decode(
+                    value,
+                    {
+                        stream: true
+                    }
+                );
+
+
+            // -------------------------------------------------
+            // SPLIT INTO LINES
+            // -------------------------------------------------
+            //
+            // Backend uses NDJSON:
+            //
+            // JSON\n
+            // JSON\n
+            // JSON\n
+            //
+
+            const lines =
+                buffer.split(
+                    "\n"
+                );
+
+
+            // Last item may be incomplete.
+            buffer =
+                lines.pop() || "";
+
+
+            // -------------------------------------------------
+            // PROCESS COMPLETE LINES
+            // -------------------------------------------------
+
+            for (
+                const line of lines
+            ) {
+
+                const trimmed =
+                    line.trim();
+
+
+                if (!trimmed) {
+                    continue;
+                }
+
+
+                let event;
+
+
+                try {
+
+                    event =
+                        JSON.parse(
+                            trimmed
+                        );
+
+                } catch (parseError) {
+
+                    console.warn(
+                        "Could not parse analysis event:",
+                        trimmed
+                    );
+
+                    continue;
+                }
+
+
+                const eventResult =
+                    processAnalysisEvent(
+                        event,
+                        stages
+                    );
+
+
+                if (eventResult) {
+
+                    finalResult =
+                        eventResult;
+                }
+            }
+        }
+
+
+        // =================================================
+        // FLUSH TEXT DECODER
+        // =================================================
+
+        buffer +=
+            decoder.decode();
+
+
+        // =================================================
+        // PROCESS FINAL BUFFER
+        // =================================================
+
+        if (buffer.trim()) {
+
+            const finalLines =
+                buffer.split(
+                    "\n"
+                );
+
+
+            for (
+                const line of finalLines
+            ) {
+
+                const trimmed =
+                    line.trim();
+
+
+                if (!trimmed) {
+                    continue;
+                }
+
+
+                let event;
+
+
+                try {
+
+                    event =
+                        JSON.parse(
+                            trimmed
+                        );
+
+                } catch (parseError) {
+
+                    console.warn(
+                        "Could not parse final analysis event:",
+                        trimmed
+                    );
+
+                    continue;
+                }
+
+
+                const eventResult =
+                    processAnalysisEvent(
+                        event,
+                        stages
+                    );
+
+
+                if (eventResult) {
+
+                    finalResult =
+                        eventResult;
+                }
+            }
+        }
+
+
+        // =================================================
+        // VALIDATE FINAL RESULT
+        // =================================================
+
+        if (!finalResult) {
+
+            throw new Error(
+                "The analysis finished without returning a result."
+            );
+        }
+
+
+        if (
+            typeof finalResult !== "object"
+        ) {
+
+            throw new Error(
+                "The backend returned an invalid analysis result."
+            );
+        }
+
+
+        // =================================================
+        // LOG RESULT
+        // =================================================
+
+        console.log(
+            "Medical report analysis:",
+            finalResult
         );
 
 
-        // -------------------------------------------------
+        // =================================================
+        // SAVE COMPLETE RESPONSE
+        // =================================================
+
+        sessionStorage.setItem(
+            "medifyReport",
+            JSON.stringify(
+                finalResult
+            )
+        );
+
+
+        // =================================================
         // SAVE ORIGINAL FILE NAME
-        // -------------------------------------------------
+        // =================================================
 
         sessionStorage.setItem(
             "medifyReportFilename",
             selectedFile?.name ||
-            result.filename ||
+            finalResult.filename ||
             "Medical Report"
         );
 
 
-        // -------------------------------------------------
-        // SUCCESS
-        // -------------------------------------------------
+        // =================================================
+        // MARK ANALYSIS SCREEN READY
+        // =================================================
+
+        if (analysisScreen) {
+
+            analysisScreen.setAttribute(
+                "aria-busy",
+                "false"
+            );
+        }
+
+
+        // =================================================
+        // SUCCESS MESSAGE
+        // =================================================
 
         showStatus(
             "Report analyzed successfully. Opening results...",
@@ -468,22 +1004,38 @@ async function analyzeReport() {
         );
 
 
-        // -------------------------------------------------
-        // GO TO RESULTS PAGE
-        // -------------------------------------------------
+        // =================================================
+        // SHORT COMPLETION PAUSE
+        // =================================================
+        //
+        // Allows the user to see the final "Preparing
+        // Results" card reach DONE before navigation.
+        //
 
-        setTimeout(
-            function () {
+        await new Promise(
+            function (resolve) {
 
-                window.location.href =
-                    "results.html";
-
-            },
-            300
+                setTimeout(
+                    resolve,
+                    500
+                );
+            }
         );
 
 
+        // =================================================
+        // GO TO RESULTS PAGE
+        // =================================================
+
+        window.location.href =
+            "results.html";
+
+
     } catch (error) {
+
+        // =================================================
+        // LOG ERROR
+        // =================================================
 
         console.error(
             "Report analysis error:",
@@ -491,22 +1043,49 @@ async function analyzeReport() {
         );
 
 
+        // =================================================
+        // HIDE ANALYSIS SCREEN
+        // =================================================
+
+        if (analysisScreen) {
+
+            analysisScreen.classList.remove(
+                "active"
+            );
+
+            analysisScreen.setAttribute(
+                "aria-busy",
+                "false"
+            );
+        }
+
+
+        document.body.classList.remove(
+            "analysis-active"
+        );
+
+
+        // =================================================
+        // RESTORE BUTTON
+        // =================================================
+
+        analyzeButton.innerHTML =
+            originalButtonHTML;
+
+
+        analyzeButton.disabled =
+            false;
+
+
+        // =================================================
+        // SHOW ERROR
+        // =================================================
+
         showStatus(
             error.message ||
             "Something went wrong while analyzing the report.",
             "error"
         );
-
-
-        // -------------------------------------------------
-        // RESTORE BUTTON
-        // -------------------------------------------------
-
-        analyzeButton.innerHTML =
-            originalButtonHTML;
-
-        analyzeButton.disabled =
-            false;
     }
 }
 
@@ -540,6 +1119,10 @@ function showStatus(
     );
 
 
+    // -----------------------------------------------------
+    // APPLY TYPE
+    // -----------------------------------------------------
+
     if (type) {
 
         statusElement.classList.add(
@@ -553,7 +1136,10 @@ function showStatus(
 // OPTIONAL: CLICK UPLOAD AREA
 // =========================================================
 
-if (uploadArea && fileInput) {
+if (
+    uploadArea &&
+    fileInput
+) {
 
     uploadArea.addEventListener(
         "click",
@@ -564,8 +1150,11 @@ if (uploadArea && fileInput) {
 
             if (
                 event.target === browseButton ||
-                browseButton?.contains(event.target)
+                browseButton?.contains(
+                    event.target
+                )
             ) {
+
                 return;
             }
 
@@ -580,7 +1169,10 @@ if (uploadArea && fileInput) {
 // OPTIONAL: KEYBOARD ACCESSIBILITY
 // =========================================================
 
-if (uploadArea && fileInput) {
+if (
+    uploadArea &&
+    fileInput
+) {
 
     uploadArea.setAttribute(
         "tabindex",
@@ -611,7 +1203,10 @@ if (uploadArea && fileInput) {
 // =========================================================
 
 const uploadForm =
-    document.querySelector("form");
+    document.querySelector(
+        "form"
+    );
+
 
 if (uploadForm) {
 
@@ -632,14 +1227,18 @@ if (uploadForm) {
 // =========================================================
 
 const navbar =
-    document.querySelector(".navbar");
+    document.querySelector(
+        ".navbar"
+    );
 
 
 if (navbar) {
 
     function updateNavbar() {
 
-        if (window.scrollY > 45) {
+        if (
+            window.scrollY > 45
+        ) {
 
             navbar.classList.add(
                 "scrolled"

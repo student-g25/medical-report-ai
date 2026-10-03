@@ -15,6 +15,8 @@ from fastapi import (
     HTTPException
 )
 
+from fastapi.responses import StreamingResponse
+
 from fastapi.middleware.cors import CORSMiddleware
 
 
@@ -122,16 +124,19 @@ def health():
 
 # =========================================================
 # ANALYZE MEDICAL REPORT
+# Streaming progress endpoint
 # =========================================================
+
+import json
+
+from fastapi.responses import StreamingResponse
+from starlette.concurrency import run_in_threadpool
+
 
 @app.post("/analyze-report")
 async def analyze_report(
     file: UploadFile = File(...)
 ):
-
-    # =====================================================
-    # 1. VALIDATE FILE TYPE
-    # =====================================================
 
     allowed_types = {
         "image/jpeg",
@@ -139,193 +144,264 @@ async def analyze_report(
         "image/webp"
     }
 
-    if file.content_type not in allowed_types:
+    async def analysis_stream():
 
-        raise HTTPException(
-            status_code=400,
+        # =====================================================
+        # 1. VALIDATE FILE
+        # =====================================================
 
-            detail=(
-                "Unsupported file type. "
-                "Please upload a JPG, PNG, or WEBP image."
+        if file.content_type not in allowed_types:
+            yield json.dumps({
+                "type": "error",
+                "message": (
+                    "Unsupported file type. "
+                    "Please upload a JPG, PNG, or WEBP image."
+                )
+            }) + "\n"
+            return
+
+        # =====================================================
+        # 2. READ UPLOADED FILE
+        # =====================================================
+
+        try:
+            image_data = await file.read()
+
+        except Exception as error:
+
+            yield json.dumps({
+                "type": "error",
+                "message": (
+                    "Could not read uploaded file: "
+                    f"{str(error)}"
+                )
+            }) + "\n"
+            return
+
+        # =====================================================
+        # 3. EMPTY FILE CHECK
+        # =====================================================
+
+        if len(image_data) == 0:
+
+            yield json.dumps({
+                "type": "error",
+                "message": "The uploaded file is empty."
+            }) + "\n"
+            return
+
+        # =====================================================
+        # 4. IMAGE SIZE CHECK
+        # =====================================================
+
+        max_size = 10 * 1024 * 1024
+
+        if len(image_data) > max_size:
+
+            yield json.dumps({
+                "type": "error",
+                "message": "Image is too large. Maximum size is 10 MB."
+            }) + "\n"
+            return
+
+        # =====================================================
+        # PIPELINE START
+        # =====================================================
+
+        yield json.dumps({
+            "type": "stage",
+            "stage": "extract",
+            "status": "active",
+            "message": "Reading your medical report..."
+        }) + "\n"
+
+        # Give the browser a moment to render the active state
+        # before starting the actual backend operation.
+        import asyncio
+        await asyncio.sleep(0.05)
+
+        # =====================================================
+        # 5. PASS 1 — RAW EXTRACTION
+        # =====================================================
+
+        try:
+
+            extracted_report = await run_in_threadpool(
+                extract_report,
+                image_data=image_data,
+                mime_type=file.content_type
             )
-        )
 
+        except Exception as error:
 
-    # =====================================================
-    # 2. READ UPLOADED FILE
-    # =====================================================
+            yield json.dumps({
+                "type": "error",
+                "stage": "extract",
+                "message": (
+                    "Medical report extraction failed: "
+                    f"{str(error)}"
+                )
+            }) + "\n"
+            return
 
-    try:
+        # Extraction finished
+        yield json.dumps({
+            "type": "stage",
+            "stage": "extract",
+            "status": "complete",
+            "message": "Report data extracted successfully."
+        }) + "\n"
 
-        image_data = await file.read()
+        await asyncio.sleep(0.05)
 
-    except Exception as error:
+        # =====================================================
+        # 6. PASS 2 — IMAGE / REPORT VERIFICATION
+        # =====================================================
 
-        raise HTTPException(
-            status_code=400,
+        yield json.dumps({
+            "type": "stage",
+            "stage": "understand",
+            "status": "active",
+            "message": "Understanding the report..."
+        }) + "\n"
 
-            detail=(
-                "Could not read uploaded file: "
-                f"{str(error)}"
+        await asyncio.sleep(0.05)
+
+        try:
+
+            verified_report = await run_in_threadpool(
+                verify_report,
+                image_data=image_data,
+                mime_type=file.content_type,
+                extracted_report=extracted_report
             )
-        )
 
+        except Exception as error:
 
-    # =====================================================
-    # 3. CHECK EMPTY FILE
-    # =====================================================
+            yield json.dumps({
+                "type": "error",
+                "stage": "understand",
+                "message": (
+                    "Medical report verification failed: "
+                    f"{str(error)}"
+                )
+            }) + "\n"
+            return
 
-    if len(image_data) == 0:
+        yield json.dumps({
+            "type": "stage",
+            "stage": "understand",
+            "status": "complete",
+            "message": "Report information verified."
+        }) + "\n"
 
-        raise HTTPException(
-            status_code=400,
+        await asyncio.sleep(0.05)
 
-            detail="The uploaded file is empty."
-        )
+        # =====================================================
+        # 7. PASS 3 — INTERPRETATION
+        # =====================================================
 
+        yield json.dumps({
+            "type": "stage",
+            "stage": "analyze",
+            "status": "active",
+            "message": "Analyzing the report..."
+        }) + "\n"
 
-    # =====================================================
-    # 4. CHECK IMAGE SIZE
-    # =====================================================
+        await asyncio.sleep(0.05)
 
-    max_size = 10 * 1024 * 1024  # 10 MB
+        try:
 
-    if len(image_data) > max_size:
-
-        raise HTTPException(
-            status_code=413,
-
-            detail=(
-                "Image is too large. "
-                "Maximum allowed size is 10 MB."
+            interpretation = await run_in_threadpool(
+                interpret_report,
+                verified_report=verified_report,
+                patient_info=extracted_report.patient_info
             )
-        )
 
+        except Exception as error:
 
-    # =====================================================
-    # 5. PASS 1 — RAW EXTRACTION
-    # =====================================================
+            yield json.dumps({
+                "type": "error",
+                "stage": "analyze",
+                "message": (
+                    "Medical report interpretation failed: "
+                    f"{str(error)}"
+                )
+            }) + "\n"
+            return
 
-    try:
+        yield json.dumps({
+            "type": "stage",
+            "stage": "analyze",
+            "status": "complete",
+            "message": "Analysis completed."
+        }) + "\n"
 
-        extracted_report = extract_report(
-            image_data=image_data,
-            mime_type=file.content_type
-        )
+        await asyncio.sleep(0.05)
 
-    except Exception as error:
+        # =====================================================
+        # 8. PREPARING RESULTS
+        # =====================================================
 
-        raise HTTPException(
-            status_code=500,
+        yield json.dumps({
+            "type": "stage",
+            "stage": "prepare",
+            "status": "active",
+            "message": "Preparing your results..."
+        }) + "\n"
 
-            detail=(
-                "Medical report extraction failed: "
-                f"{str(error)}"
+        await asyncio.sleep(0.05)
+
+        # =====================================================
+        # 9. BUILD FINAL RESPONSE
+        # =====================================================
+
+        result = {
+            "filename": file.filename,
+
+            "patient_info": (
+                extracted_report
+                .patient_info
+                .model_dump()
+            ),
+
+            "extraction": (
+                extracted_report
+                .model_dump()
+            ),
+
+            "verification": (
+                verified_report
+                .model_dump()
+            ),
+
+            "interpretation": (
+                interpretation
+                .model_dump()
             )
-        )
+        }
 
+        yield json.dumps({
+            "type": "stage",
+            "stage": "prepare",
+            "status": "complete",
+            "message": "Results are ready."
+        }) + "\n"
 
-    # =====================================================
-    # 6. PASS 2 — IMAGE VERIFICATION
-    # =====================================================
+        # =====================================================
+        # 10. FINAL RESULT
+        # =====================================================
 
-    try:
+        yield json.dumps({
+            "type": "complete",
+            "data": result
+        }) + "\n"
 
-        verified_report = verify_report(
-            image_data=image_data,
-            mime_type=file.content_type,
-            extracted_report=extracted_report
-        )
-
-    except Exception as error:
-
-        raise HTTPException(
-            status_code=500,
-
-            detail=(
-                "Medical report verification failed: "
-                f"{str(error)}"
-            )
-        )
-
-
-    # =====================================================
-    # 7. PASS 3 — INTERPRETATION
-    # =====================================================
-
-    try:
-
-        interpretation = interpret_report(
-            verified_report=verified_report,
-
-            patient_info=(
-                extracted_report.patient_info
-            )
-        )
-
-    except Exception as error:
-
-        raise HTTPException(
-            status_code=500,
-
-            detail=(
-                "Medical report interpretation failed: "
-                f"{str(error)}"
-            )
-        )
-
-
-    # =====================================================
-    # 8. FINAL JSON RESPONSE
-    # =====================================================
-
-    return {
-
-        # -------------------------------------------------
-        # Uploaded file
-        # -------------------------------------------------
-
-        "filename": file.filename,
-
-
-        # -------------------------------------------------
-        # Patient information
-        # Extracted directly from the report
-        # -------------------------------------------------
-
-        "patient_info":
-            extracted_report
-            .patient_info
-            .model_dump(),
-
-
-        # -------------------------------------------------
-        # PASS 1
-        # Raw extraction
-        # -------------------------------------------------
-
-        "extraction":
-            extracted_report
-            .model_dump(),
-
-
-        # -------------------------------------------------
-        # PASS 2
-        # Verification
-        # -------------------------------------------------
-
-        "verification":
-            verified_report
-            .model_dump(),
-
-
-        # -------------------------------------------------
-        # PASS 3
-        # Interpretation
-        # -------------------------------------------------
-
-        "interpretation":
-            interpretation
-            .model_dump()
-
-    }
+    return StreamingResponse(
+        analysis_stream(),
+        media_type="application/x-ndjson",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no"
+        }
+    )
