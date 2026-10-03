@@ -1,1055 +1,957 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>Medify — Report Results</title>
 
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-        html {
-            scroll-behavior: smooth;
-        }
+      html {
+        scroll-behavior: smooth;
+      }
 
-        body {
-            min-height: 100vh;
-            font-family:
-                Inter,
-                -apple-system,
-                BlinkMacSystemFont,
-                "Segoe UI",
-                sans-serif;
+      body {
+        min-height: 100vh;
+        font-family:
+          Inter,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
 
-            color: #17233d;
+        color: #17233d;
 
-            background:
-                radial-gradient(
-                    circle at 10% 15%,
-                    rgba(91, 103, 235, 0.13),
-                    transparent 28%
-                ),
-                radial-gradient(
-                    circle at 90% 25%,
-                    rgba(53, 181, 177, 0.12),
-                    transparent 28%
-                ),
-                linear-gradient(
-                    135deg,
-                    #f7f8fc,
-                    #f4f8fc,
-                    #f1f8f8
-                );
+        background:
+          radial-gradient(
+            circle at 10% 15%,
+            rgba(91, 103, 235, 0.13),
+            transparent 28%
+          ),
+          radial-gradient(
+            circle at 90% 25%,
+            rgba(53, 181, 177, 0.12),
+            transparent 28%
+          ),
+          linear-gradient(135deg, #f7f8fc, #f4f8fc, #f1f8f8);
 
-            transition:
-                background .35s ease,
-                color .35s ease;
-        }
+        transition:
+          background 0.35s ease,
+          color 0.35s ease;
+      }
 
-        a {
-            color: inherit;
-            text-decoration: none;
-        }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
 
-        button {
-            font: inherit;
-        }
+      button {
+        font: inherit;
+      }
 
-        /* =========================
+      /* =========================
            NAVBAR
         ========================= */
 
-        .navbar {
-            position: sticky;
-            top: 18px;
-            z-index: 1000;
+      .navbar {
+        position: sticky;
+        top: 18px;
+        z-index: 1000;
 
-            width: calc(100% - 48px);
-            max-width: 1400px;
+        width: calc(100% - 48px);
+        max-width: 1400px;
 
-            margin: 18px auto 0;
+        margin: 18px auto 0;
 
-            border: 1px solid rgba(255,255,255,.75);
-            border-radius: 22px;
+        border: 1px solid rgba(255, 255, 255, 0.75);
+        border-radius: 22px;
 
-            background: rgba(255,255,255,.67);
+        background: rgba(255, 255, 255, 0.67);
 
-            backdrop-filter: blur(22px);
-            -webkit-backdrop-filter: blur(22px);
+        backdrop-filter: blur(22px);
+        -webkit-backdrop-filter: blur(22px);
 
-            box-shadow:
-                0 15px 45px rgba(30,43,80,.08);
+        box-shadow: 0 15px 45px rgba(30, 43, 80, 0.08);
 
-            transition: .3s ease;
-        }
+        transition: 0.3s ease;
+      }
 
-        .navbar.scrolled {
-            width: min(1180px, calc(100% - 70px));
-            top: 10px;
-            margin-top: 10px;
-            border-radius: 18px;
-        }
+      .navbar.scrolled {
+        width: min(1180px, calc(100% - 70px));
+        top: 10px;
+        margin-top: 10px;
+        border-radius: 18px;
+      }
 
-        .nav-container {
-            min-height: 80px;
+      .nav-container {
+        min-height: 80px;
 
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
 
-            padding: 0 25px;
-        }
+        padding: 0 25px;
+      }
 
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
 
-            font-size: 25px;
-            font-weight: 800;
-        }
+        font-size: 25px;
+        font-weight: 800;
+      }
 
-        .logo-mark {
-            width: 50px;
-            height: 50px;
+      /* =========================================================
+                    MEDIFY IMAGE LOGO
+    ========================================================= */
 
-            display: flex;
-            align-items: center;
-            justify-content: center;
+      .site-logo {
+        display: block;
 
-            border-radius: 16px;
+        width: 185px;
+        height: 58px;
 
-            color: white;
-            font-size: 28px;
+        object-fit: contain;
+        object-position: left center;
 
-            background:
-                linear-gradient(
-                    135deg,
-                    #5966e9,
-                    #36b7b2
-                );
+        background: transparent;
 
-            box-shadow:
-                0 10px 25px rgba(89,102,233,.25);
-        }
+        transform: scale(1.18);
+        transform-origin: left center;
 
-        .logo span {
-            background:
-                linear-gradient(
-                    90deg,
-                    #5966e9,
-                    #35aeb6
-                );
+        transition: opacity 0.25s ease;
+      }
 
-            -webkit-background-clip: text;
-            background-clip: text;
+      .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 30px;
+      }
 
-            color: transparent;
-        }
+      .nav-links {
+        display: flex;
+        gap: 32px;
+      }
 
-        .nav-right {
-            display: flex;
-            align-items: center;
-            gap: 30px;
-        }
+      .nav-links a {
+        color: #596982;
+        font-size: 15px;
+        font-weight: 600;
+      }
 
-        .nav-links {
-            display: flex;
-            gap: 32px;
-        }
+      .nav-links a:hover {
+        color: #5966e9;
+      }
 
-        .nav-links a {
-            color: #596982;
-            font-size: 15px;
-            font-weight: 600;
-        }
+      .theme-toggle {
+        width: 45px;
+        height: 45px;
 
-        .nav-links a:hover {
-            color: #5966e9;
-        }
+        border: 1px solid rgba(89, 102, 233, 0.15);
+        border-radius: 14px;
 
-        .theme-toggle {
-            width: 45px;
-            height: 45px;
+        cursor: pointer;
 
-            border: 1px solid rgba(89,102,233,.15);
-            border-radius: 14px;
+        background: rgba(255, 255, 255, 0.7);
+        color: #5966e9;
 
-            cursor: pointer;
+        font-size: 19px;
+      }
 
-            background: rgba(255,255,255,.7);
-            color: #5966e9;
-
-            font-size: 19px;
-        }
-
-        /* =========================
+      /* =========================
            MAIN
         ========================= */
 
-        .results-main {
-            width: min(1180px, calc(100% - 40px));
+      .results-main {
+        width: min(1180px, calc(100% - 40px));
 
-            margin: auto;
+        margin: auto;
 
-            padding: 90px 0 80px;
-        }
+        padding: 90px 0 80px;
+      }
 
-        .page-heading {
-            text-align: center;
-            max-width: 850px;
+      .page-heading {
+        text-align: center;
+        max-width: 850px;
 
-            margin: 0 auto 45px;
-        }
+        margin: 0 auto 45px;
+      }
 
-        .section-label {
-            display: inline-block;
+      .section-label {
+        display: inline-block;
 
-            margin-bottom: 14px;
+        margin-bottom: 14px;
 
-            color: #5966e9;
+        color: #5966e9;
 
-            font-size: 12px;
-            font-weight: 800;
-            letter-spacing: 2px;
-        }
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 2px;
+      }
 
-        .page-heading h1 {
-            font-size: clamp(40px, 6vw, 65px);
-            line-height: 1.05;
-            letter-spacing: -3px;
-        }
+      .page-heading h1 {
+        font-size: clamp(40px, 6vw, 65px);
+        line-height: 1.05;
+        letter-spacing: -3px;
+      }
 
-        .page-heading h1 span {
-            background:
-                linear-gradient(
-                    90deg,
-                    #5966e9,
-                    #36b7b2
-                );
+      .page-heading h1 span {
+        background: linear-gradient(90deg, #5966e9, #36b7b2);
 
-            -webkit-background-clip: text;
-            background-clip: text;
+        -webkit-background-clip: text;
+        background-clip: text;
 
-            color: transparent;
-        }
+        color: transparent;
+      }
 
-        .page-heading p {
-            margin-top: 18px;
+      .page-heading p {
+        margin-top: 18px;
 
-            color: #71819d;
+        color: #71819d;
 
-            line-height: 1.7;
-            font-size: 16px;
-        }
+        line-height: 1.7;
+        font-size: 16px;
+      }
 
-        /* =========================
+      /* =========================
            CARDS
         ========================= */
 
-        .glass-card {
-            border: 1px solid rgba(255,255,255,.8);
-            border-radius: 27px;
+      .glass-card {
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        border-radius: 27px;
 
-            background: rgba(255,255,255,.62);
+        background: rgba(255, 255, 255, 0.62);
 
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
 
-            box-shadow:
-                0 25px 65px rgba(40,55,90,.08);
-        }
+        box-shadow: 0 25px 65px rgba(40, 55, 90, 0.08);
+      }
 
-        .overview {
-            display: grid;
+      .overview {
+        display: grid;
 
-            grid-template-columns:
-                1.5fr .8fr;
+        grid-template-columns: 1.5fr 0.8fr;
 
-            gap: 20px;
-        }
+        gap: 20px;
+      }
 
-        .summary-card,
-        .patient-card {
-            padding: 32px;
-        }
+      .summary-card,
+      .patient-card {
+        padding: 32px;
+      }
 
-        .card-label {
-            color: #5966e9;
+      .card-label {
+        color: #5966e9;
 
-            font-size: 11px;
-            font-weight: 800;
+        font-size: 11px;
+        font-weight: 800;
 
-            letter-spacing: 1.6px;
-        }
+        letter-spacing: 1.6px;
+      }
 
-        .summary-card h2,
-        .patient-card h2 {
-            margin-top: 8px;
+      .summary-card h2,
+      .patient-card h2 {
+        margin-top: 8px;
 
-            color: #17243d;
+        color: #17243d;
 
-            font-size: 28px;
-        }
+        font-size: 28px;
+      }
 
-        .summary-card p {
-            margin-top: 16px;
+      .summary-card p {
+        margin-top: 16px;
 
-            color: #5e6d84;
+        color: #5e6d84;
 
-            line-height: 1.75;
-        }
+        line-height: 1.75;
+      }
 
-        /* =========================
+      /* =========================
            PATIENT
         ========================= */
 
-        .patient-grid {
-            display: grid;
+      .patient-grid {
+        display: grid;
 
-            grid-template-columns:
-                repeat(2, 1fr);
+        grid-template-columns: repeat(2, 1fr);
 
-            gap: 12px;
+        gap: 12px;
 
-            margin-top: 20px;
-        }
+        margin-top: 20px;
+      }
 
-        .patient-item {
-            padding: 15px;
+      .patient-item {
+        padding: 15px;
 
-            border-radius: 17px;
+        border-radius: 17px;
 
-            background: rgba(247,249,253,.8);
-            border: 1px solid #e4e9f1;
-        }
+        background: rgba(247, 249, 253, 0.8);
+        border: 1px solid #e4e9f1;
+      }
 
-        .patient-item span {
-            display: block;
+      .patient-item span {
+        display: block;
 
-            color: #8b98ac;
+        color: #8b98ac;
 
-            font-size: 10px;
-            font-weight: 800;
+        font-size: 10px;
+        font-weight: 800;
 
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
 
-        .patient-item strong {
-            display: block;
+      .patient-item strong {
+        display: block;
 
-            margin-top: 6px;
+        margin-top: 6px;
 
-            color: #1b2943;
-        }
+        color: #1b2943;
+      }
 
-        /* =========================
+      /* =========================
            CONTENT
         ========================= */
 
-        .content-card {
-            margin-top: 24px;
-            padding: 34px;
-        }
+      .content-card {
+        margin-top: 24px;
+        padding: 34px;
+      }
 
-        .content-heading {
-            margin-bottom: 28px;
-        }
+      .content-heading {
+        margin-bottom: 28px;
+      }
 
-        .content-heading h2 {
-            margin-top: 7px;
+      .content-heading h2 {
+        margin-top: 7px;
 
-            color: #17243d;
+        color: #17243d;
 
-            font-size: 29px;
-        }
+        font-size: 29px;
+      }
 
-        .content-heading p {
-            margin-top: 8px;
+      .content-heading p {
+        margin-top: 8px;
 
-            color: #7b8aa1;
+        color: #7b8aa1;
 
-            line-height: 1.6;
-        }
+        line-height: 1.6;
+      }
 
-        /* =========================
+      /* =========================
            TEST SECTIONS
         ========================= */
 
-        .metric-section {
-            margin-top: 25px;
-            padding: 25px;
+      .metric-section {
+        margin-top: 25px;
+        padding: 25px;
 
-            border-radius: 22px;
+        border-radius: 22px;
 
-            background: rgba(255,255,255,.58);
-            border: 1px solid #e0e6ef;
-        }
+        background: rgba(255, 255, 255, 0.58);
+        border: 1px solid #e0e6ef;
+      }
 
-        .metric-section:first-child {
-            margin-top: 0;
-        }
+      .metric-section:first-child {
+        margin-top: 0;
+      }
 
-        .section-title {
-            display: flex;
-            align-items: center;
+      .section-title {
+        display: flex;
+        align-items: center;
 
-            gap: 12px;
+        gap: 12px;
 
-            color: #18253e;
+        color: #18253e;
 
-            font-size: 20px;
-            font-weight: 800;
-        }
+        font-size: 20px;
+        font-weight: 800;
+      }
 
-        .section-icon {
-            width: 40px;
-            height: 40px;
+      .section-icon {
+        width: 40px;
+        height: 40px;
 
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
 
-            border-radius: 13px;
+        border-radius: 13px;
 
-            background:
-                linear-gradient(
-                    135deg,
-                    rgba(89,102,233,.13),
-                    rgba(54,183,178,.14)
-                );
-        }
+        background: linear-gradient(
+          135deg,
+          rgba(89, 102, 233, 0.13),
+          rgba(54, 183, 178, 0.14)
+        );
+      }
 
-        .metric-list {
-            display: grid;
-            gap: 13px;
+      .metric-list {
+        display: grid;
+        gap: 13px;
 
-            margin-top: 20px;
-        }
+        margin-top: 20px;
+      }
 
-        .metric-row {
-            padding: 21px;
+      .metric-row {
+        padding: 21px;
 
-            border-radius: 18px;
+        border-radius: 18px;
 
-            background: rgba(250,252,255,.8);
+        background: rgba(250, 252, 255, 0.8);
 
-            border: 1px solid #e3e8f0;
-        }
+        border: 1px solid #e3e8f0;
+      }
 
-        .metric-top {
-            display: flex;
+      .metric-top {
+        display: flex;
 
-            justify-content: space-between;
-            align-items: flex-start;
+        justify-content: space-between;
+        align-items: flex-start;
 
-            gap: 15px;
-        }
+        gap: 15px;
+      }
 
-        .metric-name {
-            color: #172640;
+      .metric-name {
+        color: #172640;
 
-            font-size: 16px;
-            font-weight: 800;
-        }
+        font-size: 16px;
+        font-weight: 800;
+      }
 
-        .metric-status {
-            padding: 7px 11px;
+      .metric-status {
+        padding: 7px 11px;
 
-            border-radius: 999px;
+        border-radius: 999px;
 
-            font-size: 11px;
-            font-weight: 800;
+        font-size: 11px;
+        font-weight: 800;
 
-            white-space: nowrap;
-        }
+        white-space: nowrap;
+      }
 
-        .status-normal {
-            color: #148772;
-            background: #e8f8f3;
-        }
+      .status-normal {
+        color: #148772;
+        background: #e8f8f3;
+      }
 
-        .status-high,
-        .status-low {
-            color: #a36a00;
-            background: #fff4dd;
-        }
+      .status-high,
+      .status-low {
+        color: #a36a00;
+        background: #fff4dd;
+      }
 
-        .status-unknown {
-            color: #667085;
-            background: #edf0f4;
-        }
+      .status-unknown {
+        color: #667085;
+        background: #edf0f4;
+      }
 
-        .metric-values {
-            display: grid;
+      .metric-values {
+        display: grid;
 
-            grid-template-columns:
-                repeat(3, 1fr);
+        grid-template-columns: repeat(3, 1fr);
 
-            gap: 12px;
+        gap: 12px;
 
-            margin-top: 17px;
-        }
+        margin-top: 17px;
+      }
 
-        .value-box {
-            padding: 13px 15px;
+      .value-box {
+        padding: 13px 15px;
 
-            border-radius: 14px;
+        border-radius: 14px;
 
-            background: #f1f5fa;
-        }
+        background: #f1f5fa;
+      }
 
-        .value-box span {
-            display: block;
+      .value-box span {
+        display: block;
 
-            color: #8996aa;
+        color: #8996aa;
 
-            font-size: 10px;
-            font-weight: 800;
+        font-size: 10px;
+        font-weight: 800;
 
-            text-transform: uppercase;
-            letter-spacing: .7px;
-        }
+        text-transform: uppercase;
+        letter-spacing: 0.7px;
+      }
 
-        .value-box strong {
-            display: block;
+      .value-box strong {
+        display: block;
 
-            margin-top: 6px;
+        margin-top: 6px;
 
-            color: #1b2942;
+        color: #1b2942;
 
-            font-size: 14px;
-        }
+        font-size: 14px;
+      }
 
-        .explanation {
-            margin-top: 16px;
-            padding: 16px 18px;
+      .explanation {
+        margin-top: 16px;
+        padding: 16px 18px;
 
-            border-left: 3px solid #5966e9;
-            border-radius: 0 13px 13px 0;
+        border-left: 3px solid #5966e9;
+        border-radius: 0 13px 13px 0;
 
-            background: rgba(89,102,233,.055);
+        background: rgba(89, 102, 233, 0.055);
 
-            color: #52627b;
+        color: #52627b;
 
-            line-height: 1.65;
-            font-size: 14px;
-        }
+        line-height: 1.65;
+        font-size: 14px;
+      }
 
-        .explanation strong {
-            display: block;
+      .explanation strong {
+        display: block;
 
-            margin-bottom: 5px;
+        margin-bottom: 5px;
 
-            color: #5966e9;
+        color: #5966e9;
 
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
 
-        /* =========================
+      /* =========================
            INFORMATION BOXES
         ========================= */
 
-        .info-grid {
-            display: grid;
+      .info-grid {
+        display: grid;
 
-            grid-template-columns:
-                repeat(3, 1fr);
+        grid-template-columns: repeat(3, 1fr);
 
-            gap: 18px;
+        gap: 18px;
 
-            margin-top: 24px;
-        }
+        margin-top: 24px;
+      }
 
-        .info-card {
-            padding: 25px;
+      .info-card {
+        padding: 25px;
 
-            border-radius: 23px;
+        border-radius: 23px;
 
-            background: rgba(255,255,255,.62);
+        background: rgba(255, 255, 255, 0.62);
 
-            border: 1px solid rgba(255,255,255,.8);
+        border: 1px solid rgba(255, 255, 255, 0.8);
 
-            box-shadow:
-                0 18px 45px rgba(40,55,90,.06);
-        }
+        box-shadow: 0 18px 45px rgba(40, 55, 90, 0.06);
+      }
 
-        .info-card h3 {
-            color: #18253e;
+      .info-card h3 {
+        color: #18253e;
 
-            font-size: 18px;
-        }
+        font-size: 18px;
+      }
 
-        .info-card ul {
-            margin-top: 15px;
-            padding-left: 20px;
+      .info-card ul {
+        margin-top: 15px;
+        padding-left: 20px;
 
-            color: #596a82;
+        color: #596a82;
 
-            line-height: 1.7;
-            font-size: 14px;
-        }
+        line-height: 1.7;
+        font-size: 14px;
+      }
 
-        .info-card li {
-            margin-bottom: 8px;
-        }
+      .info-card li {
+        margin-bottom: 8px;
+      }
 
-        /* =========================
+      /* =========================
            DISCLAIMER
         ========================= */
 
-        .disclaimer {
-            margin-top: 24px;
-            padding: 22px 25px;
+      .disclaimer {
+        margin-top: 24px;
+        padding: 22px 25px;
 
-            border-radius: 20px;
+        border-radius: 20px;
 
-            background: rgba(255,249,232,.8);
+        background: rgba(255, 249, 232, 0.8);
 
-            border: 1px solid #f2dfae;
+        border: 1px solid #f2dfae;
 
-            color: #765d27;
+        color: #765d27;
 
-            line-height: 1.65;
+        line-height: 1.65;
 
-            font-size: 13px;
-        }
+        font-size: 13px;
+      }
 
-        /* =========================
+      /* =========================
            ACTIONS
         ========================= */
 
-        .actions {
-            display: flex;
-            justify-content: center;
+      .actions {
+        display: flex;
+        justify-content: center;
 
-            gap: 14px;
+        gap: 14px;
 
-            margin-top: 35px;
-        }
+        margin-top: 35px;
+      }
 
-        .btn {
-            border: none;
+      .btn {
+        border: none;
 
-            padding: 14px 23px;
+        padding: 14px 23px;
 
-            border-radius: 15px;
+        border-radius: 15px;
 
-            cursor: pointer;
+        cursor: pointer;
 
-            font-weight: 700;
+        font-weight: 700;
 
-            transition: .25s ease;
-        }
+        transition: 0.25s ease;
+      }
 
-        .btn-primary {
-            color: white;
+      .btn-primary {
+        color: white;
 
-            background:
-                linear-gradient(
-                    135deg,
-                    #5966e9,
-                    #36b7b2
-                );
+        background: linear-gradient(135deg, #5966e9, #36b7b2);
 
-            box-shadow:
-                0 10px 25px rgba(89,102,233,.2);
-        }
+        box-shadow: 0 10px 25px rgba(89, 102, 233, 0.2);
+      }
 
-        .btn-secondary {
-            color: #5966e9;
+      .btn-secondary {
+        color: #5966e9;
 
-            background: rgba(255,255,255,.75);
+        background: rgba(255, 255, 255, 0.75);
 
-            border: 1px solid #dfe5ef;
-        }
+        border: 1px solid #dfe5ef;
+      }
 
-        .btn:hover {
-            transform: translateY(-2px);
-        }
+      .btn:hover {
+        transform: translateY(-2px);
+      }
 
-        /* =========================
+      /* =========================
            EMPTY / ERROR
         ========================= */
 
-        .empty-state {
-            text-align: center;
+      .empty-state {
+        text-align: center;
 
-            padding: 70px 25px;
-        }
+        padding: 70px 25px;
+      }
 
-        .empty-state h2 {
-            color: #17243d;
-        }
+      .empty-state h2 {
+        color: #17243d;
+      }
 
-        .empty-state p {
-            margin-top: 10px;
+      .empty-state p {
+        margin-top: 10px;
 
-            color: #71819d;
-        }
+        color: #71819d;
+      }
 
-        /* =========================
+      /* =========================
            DARK MODE
         ========================= */
 
-        body.dark {
-            color: #edf2ff;
+      body.dark {
+        color: #edf2ff;
 
-            background:
-                radial-gradient(
-                    circle at 10% 15%,
-                    rgba(89,102,233,.16),
-                    transparent 28%
-                ),
-                radial-gradient(
-                    circle at 90% 25%,
-                    rgba(54,183,178,.12),
-                    transparent 28%
-                ),
-                #0c1220;
-        }
+        background:
+          radial-gradient(
+            circle at 10% 15%,
+            rgba(89, 102, 233, 0.16),
+            transparent 28%
+          ),
+          radial-gradient(
+            circle at 90% 25%,
+            rgba(54, 183, 178, 0.12),
+            transparent 28%
+          ),
+          #0c1220;
+      }
 
-        body.dark .navbar,
-        body.dark .glass-card,
-        body.dark .info-card {
-            background: rgba(20,28,45,.72);
+      body.dark .navbar,
+      body.dark .glass-card,
+      body.dark .info-card {
+        background: rgba(20, 28, 45, 0.72);
 
-            border-color:
-                rgba(255,255,255,.08);
-        }
+        border-color: rgba(255, 255, 255, 0.08);
+      }
 
-        body.dark .logo,
-        body.dark .summary-card h2,
-        body.dark .patient-card h2,
-        body.dark .content-heading h2,
-        body.dark .section-title,
-        body.dark .metric-name,
-        body.dark .info-card h3,
-        body.dark .empty-state h2 {
-            color: #edf2ff;
-        }
+      body.dark .logo,
+      body.dark .summary-card h2,
+      body.dark .patient-card h2,
+      body.dark .content-heading h2,
+      body.dark .section-title,
+      body.dark .metric-name,
+      body.dark .info-card h3,
+      body.dark .empty-state h2 {
+        color: #edf2ff;
+      }
 
-        body.dark .nav-links a,
-        body.dark .page-heading p,
-        body.dark .summary-card p,
-        body.dark .content-heading p,
-        body.dark .metric-explanation,
-        body.dark .info-card li {
-            color: #9eabc1;
-        }
+      body.dark .nav-links a,
+      body.dark .page-heading p,
+      body.dark .summary-card p,
+      body.dark .content-heading p,
+      body.dark .metric-explanation,
+      body.dark .info-card li {
+        color: #9eabc1;
+      }
 
-        body.dark .theme-toggle,
-        body.dark .btn-secondary {
-            background: rgba(255,255,255,.07);
-            border-color: rgba(255,255,255,.1);
-        }
+      body.dark .theme-toggle,
+      body.dark .btn-secondary {
+        background: rgba(255, 255, 255, 0.07);
+        border-color: rgba(255, 255, 255, 0.1);
+      }
 
-        body.dark .patient-item,
-        body.dark .metric-row,
-        body.dark .metric-section,
-        body.dark .value-box {
-            background: rgba(255,255,255,.045);
-            border-color: rgba(255,255,255,.08);
-        }
+      body.dark .patient-item,
+      body.dark .metric-row,
+      body.dark .metric-section,
+      body.dark .value-box {
+        background: rgba(255, 255, 255, 0.045);
+        border-color: rgba(255, 255, 255, 0.08);
+      }
 
-        body.dark .patient-item strong,
-        body.dark .value-box strong {
-            color: #e7edfb;
-        }
+      body.dark .patient-item strong,
+      body.dark .value-box strong {
+        color: #e7edfb;
+      }
 
-        body.dark .explanation {
-            background: rgba(89,102,233,.09);
-        }
+      body.dark .explanation {
+        background: rgba(89, 102, 233, 0.09);
+      }
 
-        body.dark .disclaimer {
-            background: rgba(120,91,25,.18);
-            border-color: rgba(215,173,76,.25);
-            color: #dbc78e;
-        }
+      body.dark .disclaimer {
+        background: rgba(120, 91, 25, 0.18);
+        border-color: rgba(215, 173, 76, 0.25);
+        color: #dbc78e;
+      }
 
-        /* =========================
+      /* =========================
            RESPONSIVE
         ========================= */
 
-        @media (max-width: 900px) {
-
-            .overview {
-                grid-template-columns: 1fr;
-            }
-
-            .info-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .nav-links {
-                display: none;
-            }
-
-            .metric-values {
-                grid-template-columns: 1fr;
-            }
+      @media (max-width: 900px) {
+        .overview {
+          grid-template-columns: 1fr;
         }
 
-        @media (max-width: 600px) {
-
-            .navbar {
-                width: calc(100% - 22px);
-                top: 8px;
-                margin-top: 8px;
-            }
-
-            .nav-container {
-                min-height: 65px;
-                padding: 0 15px;
-            }
-
-            .logo {
-                font-size: 20px;
-            }
-
-            .logo-mark {
-                width: 40px;
-                height: 40px;
-
-                font-size: 22px;
-            }
-
-            .results-main {
-                width: calc(100% - 22px);
-                padding-top: 65px;
-            }
-
-            .page-heading h1 {
-                letter-spacing: -2px;
-            }
-
-            .summary-card,
-            .patient-card,
-            .content-card {
-                padding: 22px;
-            }
-
-            .metric-section {
-                padding: 18px;
-            }
-
-            .metric-top {
-                flex-direction: column;
-            }
-
-            .actions {
-                flex-direction: column;
-            }
-
-            .btn {
-                width: 100%;
-            }
+        .info-grid {
+          grid-template-columns: 1fr;
         }
+
+        .nav-links {
+          display: none;
+        }
+
+        .metric-values {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 600px) {
+        .navbar {
+          width: calc(100% - 22px);
+          top: 8px;
+          margin-top: 8px;
+        }
+
+        .nav-container {
+          min-height: 65px;
+          padding: 0 15px;
+        }
+
+        .logo {
+          font-size: 20px;
+        }
+
+        .logo-mark {
+          width: 40px;
+          height: 40px;
+
+          font-size: 22px;
+        }
+
+        .results-main {
+          width: calc(100% - 22px);
+          padding-top: 65px;
+        }
+
+        .page-heading h1 {
+          letter-spacing: -2px;
+        }
+
+        .summary-card,
+        .patient-card,
+        .content-card {
+          padding: 22px;
+        }
+
+        .metric-section {
+          padding: 18px;
+        }
+
+        .metric-top {
+          flex-direction: column;
+        }
+
+        .actions {
+          flex-direction: column;
+        }
+
+        .btn {
+          width: 100%;
+        }
+      }
     </style>
-</head>
+  </head>
 
-<body>
-
-<header class="navbar" id="navbar">
-
-    <div class="nav-container">
-
-        <a href="index.html" class="logo">
-
-            <div class="logo-mark">✚</div>
-
-            <div>
-                Medi<span>fy</span>
-            </div>
-
+  <body>
+    <header class="navbar" id="navbar">
+      <div class="nav-container">
+        <a href="index.html" class="logo" aria-label="Medify home">
+          <img src="assets/medify-logo.png" alt="Medify" class="site-logo" />
         </a>
 
         <div class="nav-right">
+          <nav class="nav-links">
+            <a href="index.html">Home</a>
 
-            <nav class="nav-links">
+            <a href="upload.html">Analyze Report</a>
+          </nav>
 
-                <a href="index.html">Home</a>
-
-                <a href="upload.html">Analyze Report</a>
-
-            </nav>
-
-            <button
-                class="theme-toggle"
-                id="themeToggle"
-                type="button"
-                aria-label="Toggle theme"
-            >
-                ☾
-            </button>
-
+          <button
+            class="theme-toggle"
+            id="themeToggle"
+            type="button"
+            aria-label="Toggle theme"
+          >
+            ☾
+          </button>
         </div>
+      </div>
+    </header>
 
-    </div>
+    <main class="results-main">
+      <!-- PAGE HEADING -->
 
-</header>
-
-
-<main class="results-main">
-
-    <!-- PAGE HEADING -->
-
-    <section class="page-heading">
-
-        <div class="section-label">
-            YOUR REPORT
-        </div>
+      <section class="page-heading">
+        <div class="section-label">YOUR REPORT</div>
 
         <h1>
-            Understand your
-            <span>health report.</span>
+          Understand your
+          <span>health report.</span>
         </h1>
 
         <p>
-            Medify has organized the information extracted from
-            your medical report into a simpler, easier-to-understand
-            format.
+          Medify has organized the information extracted from your medical
+          report into a simpler, easier-to-understand format.
         </p>
+      </section>
 
-    </section>
+      <!-- RESULTS ARE INSERTED HERE -->
 
+      <div id="resultsContainer"></div>
+    </main>
 
-    <!-- RESULTS ARE INSERTED HERE -->
-
-    <div id="resultsContainer"></div>
-
-</main>
-
-
-<script>
-
-    /* =========================================================
+    <script>
+      /* =========================================================
        GET BACKEND RESPONSE
     ========================================================= */
 
-    const storedReport =
-        sessionStorage.getItem("medifyReport");
+      const storedReport = sessionStorage.getItem("medifyReport");
 
-    const filename =
-        sessionStorage.getItem("medifyReportFilename")
-        || "Medical Report";
+      const filename =
+        sessionStorage.getItem("medifyReportFilename") || "Medical Report";
 
-    const container =
-        document.getElementById("resultsContainer");
+      const container = document.getElementById("resultsContainer");
 
-
-    /* =========================================================
+      /* =========================================================
        THEME
     ========================================================= */
 
-    const themeToggle =
-        document.getElementById("themeToggle");
+      const themeToggle = document.getElementById("themeToggle");
 
-    const savedTheme =
-        localStorage.getItem("medifyTheme");
+      const savedTheme = localStorage.getItem("medifyTheme");
 
-    if (savedTheme === "dark") {
+      if (savedTheme === "dark") {
         document.body.classList.add("dark");
         themeToggle.textContent = "☀";
-    }
+      }
 
-    themeToggle.addEventListener("click", () => {
-
+      themeToggle.addEventListener("click", () => {
         document.body.classList.toggle("dark");
 
-        const isDark =
-            document.body.classList.contains("dark");
+        const isDark = document.body.classList.contains("dark");
 
-        localStorage.setItem(
-            "medifyTheme",
-            isDark ? "dark" : "light"
-        );
+        localStorage.setItem("medifyTheme", isDark ? "dark" : "light");
 
-        themeToggle.textContent =
-            isDark ? "☀" : "☾";
+        themeToggle.textContent = isDark ? "☀" : "☾";
+      });
 
-    });
-
-
-    /* =========================================================
+      /* =========================================================
        NAVBAR SCROLL
     ========================================================= */
 
-    window.addEventListener("scroll", () => {
+      window.addEventListener("scroll", () => {
+        const navbar = document.getElementById("navbar");
 
-        const navbar =
-            document.getElementById("navbar");
+        navbar.classList.toggle("scrolled", window.scrollY > 40);
+      });
 
-        navbar.classList.toggle(
-            "scrolled",
-            window.scrollY > 40
-        );
-
-    });
-
-
-    /* =========================================================
+      /* =========================================================
        ESCAPE HTML
        Prevents report text from being interpreted as HTML.
     ========================================================= */
 
-    function escapeHTML(value) {
-
+      function escapeHTML(value) {
         if (value === null || value === undefined) {
-            return "";
+          return "";
         }
 
         return String(value)
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
 
-    }
-
-
-    /* =========================================================
+      /* =========================================================
        STATUS CLASS
     ========================================================= */
 
-    function getStatusClass(status) {
-
-        const text =
-            String(status || "").toLowerCase();
+      function getStatusClass(status) {
+        const text = String(status || "").toLowerCase();
 
         if (text.includes("within")) {
-            return "status-normal";
+          return "status-normal";
         }
 
         if (text.includes("above") || text.includes("high")) {
-            return "status-high";
+          return "status-high";
         }
 
         if (text.includes("below") || text.includes("low")) {
-            return "status-low";
+          return "status-low";
         }
 
         return "status-unknown";
-    }
+      }
 
-
-    /* =========================================================
+      /* =========================================================
        PATIENT INFORMATION
     ========================================================= */
 
-    function renderPatient(patient) {
-
+      function renderPatient(patient) {
         if (!patient) {
-            return `
+          return `
                 <div class="patient-card glass-card">
 
                     <div class="card-label">
@@ -1098,9 +1000,7 @@
                         </span>
 
                         <strong>
-                            ${escapeHTML(
-                                patient.age ?? "Not provided"
-                            )}
+                            ${escapeHTML(patient.age ?? "Not provided")}
                         </strong>
 
                     </div>
@@ -1113,9 +1013,7 @@
                         </span>
 
                         <strong>
-                            ${escapeHTML(
-                                patient.sex ?? "Not provided"
-                            )}
+                            ${escapeHTML(patient.sex ?? "Not provided")}
                         </strong>
 
                     </div>
@@ -1124,40 +1022,27 @@
 
             </div>
         `;
-    }
+      }
 
-
-    /* =========================================================
+      /* =========================================================
        TEST CARD
     ========================================================= */
 
-    function renderTest(test) {
+      function renderTest(test) {
+        const status = test.status || "cannot be determined";
 
-        const status =
-            test.status ||
-            "cannot be determined";
+        const statusClass = getStatusClass(status);
 
-        const statusClass =
-            getStatusClass(status);
+        const value = test.reported_value ?? test.value ?? "Not provided";
 
-        const value =
-            test.reported_value ??
-            test.value ??
-            "Not provided";
+        const unit = test.reported_unit ?? test.unit ?? "";
 
-        const unit =
-            test.reported_unit ??
-            test.unit ??
-            "";
-
-        const reference =
-            test.reference_range ??
-            "Not provided";
+        const reference = test.reference_range ?? "Not provided";
 
         const explanation =
-            test.simple_explanation ??
-            test.explanation ??
-            "No explanation was provided.";
+          test.simple_explanation ??
+          test.explanation ??
+          "No explanation was provided.";
 
         return `
 
@@ -1166,9 +1051,7 @@
                 <div class="metric-top">
 
                     <div class="metric-name">
-                        ${escapeHTML(
-                            test.name || "Unnamed test"
-                        )}
+                        ${escapeHTML(test.name || "Unnamed test")}
                     </div>
 
                     <div class="metric-status ${statusClass}">
@@ -1188,10 +1071,7 @@
 
                         <strong>
                             ${escapeHTML(value)}
-                            ${unit
-                                ? " " + escapeHTML(unit)
-                                : ""
-                            }
+                            ${unit ? " " + escapeHTML(unit) : ""}
                         </strong>
 
                     </div>
@@ -1238,22 +1118,17 @@
             </article>
 
         `;
-    }
+      }
 
-
-    /* =========================================================
+      /* =========================================================
        TEST SECTION
     ========================================================= */
 
-    function renderSection(section) {
-
-        const tests =
-            Array.isArray(section.tests)
-                ? section.tests
-                : [];
+      function renderSection(section) {
+        const tests = Array.isArray(section.tests) ? section.tests : [];
 
         if (!tests.length) {
-            return "";
+          return "";
         }
 
         return `
@@ -1263,40 +1138,32 @@
                 <div class="section-title">
 
                     <div class="section-icon">
-                        ${escapeHTML(
-                            section.icon || "🧪"
-                        )}
+                        ${escapeHTML(section.icon || "🧪")}
                     </div>
 
-                    ${escapeHTML(
-                        section.title || "Tests"
-                    )}
+                    ${escapeHTML(section.title || "Tests")}
 
                 </div>
 
 
                 <div class="metric-list">
 
-                    ${tests
-                        .map(renderTest)
-                        .join("")}
+                    ${tests.map(renderTest).join("")}
 
                 </div>
 
             </section>
 
         `;
-    }
+      }
 
-
-    /* =========================================================
+      /* =========================================================
        FALLBACK FOR tests[]
     ========================================================= */
 
-    function renderFallbackTests(tests) {
-
+      function renderFallbackTests(tests) {
         if (!Array.isArray(tests) || !tests.length) {
-            return `
+          return `
                 <div class="empty-state">
 
                     <h2>
@@ -1328,27 +1195,22 @@
 
                 <div class="metric-list">
 
-                    ${tests
-                        .map(renderTest)
-                        .join("")}
+                    ${tests.map(renderTest).join("")}
 
                 </div>
 
             </section>
 
         `;
-    }
+      }
 
-
-    /* =========================================================
+      /* =========================================================
        LIST ITEMS
     ========================================================= */
 
-    function renderList(items) {
-
+      function renderList(items) {
         if (!Array.isArray(items) || !items.length) {
-
-            return `
+          return `
                 <li>
                     No additional information provided.
                 </li>
@@ -1356,43 +1218,35 @@
         }
 
         return items
-            .map(item => `
+          .map(
+            (item) => `
                 <li>
                     ${escapeHTML(item)}
                 </li>
-            `)
-            .join("");
-    }
+            `,
+          )
+          .join("");
+      }
 
-
-    /* =========================================================
+      /* =========================================================
        MAIN RENDER
     ========================================================= */
 
-    function renderResults(data) {
+      function renderResults(data) {
+        const interpretation = data.interpretation || {};
 
-        const interpretation =
-            data.interpretation || {};
-
-        const patient =
-            data.patient_info ||
-            data.patient ||
-            null;
+        const patient = data.patient_info || data.patient || null;
 
         const summary =
-            interpretation.summary ||
-            "No summary was provided for this report.";
+          interpretation.summary || "No summary was provided for this report.";
 
-        const sections =
-            Array.isArray(interpretation.sections)
-                ? interpretation.sections
-                : [];
+        const sections = Array.isArray(interpretation.sections)
+          ? interpretation.sections
+          : [];
 
-        const tests =
-            Array.isArray(interpretation.tests)
-                ? interpretation.tests
-                : [];
-
+        const tests = Array.isArray(interpretation.tests)
+          ? interpretation.tests
+          : [];
 
         /* =========================
            TEST CONTENT
@@ -1401,19 +1255,10 @@
         let testsHTML = "";
 
         if (sections.length) {
-
-            testsHTML =
-                sections
-                    .map(renderSection)
-                    .join("");
-
+          testsHTML = sections.map(renderSection).join("");
         } else {
-
-            testsHTML =
-                renderFallbackTests(tests);
-
+          testsHTML = renderFallbackTests(tests);
         }
-
 
         /* =========================
            PAGE
@@ -1478,9 +1323,7 @@
                     </h3>
 
                     <ul>
-                        ${renderList(
-                            interpretation.important_points
-                        )}
+                        ${renderList(interpretation.important_points)}
                     </ul>
 
                 </section>
@@ -1494,7 +1337,7 @@
 
                     <ul>
                         ${renderList(
-                            interpretation.doctor_discussion_questions
+                          interpretation.doctor_discussion_questions,
                         )}
                     </ul>
 
@@ -1508,9 +1351,7 @@
                     </h3>
 
                     <ul>
-                        ${renderList(
-                            interpretation.limitations
-                        )}
+                        ${renderList(interpretation.limitations)}
                     </ul>
 
                 </section>
@@ -1551,15 +1392,13 @@
             </div>
 
         `;
-    }
+      }
 
-
-    /* =========================================================
+      /* =========================================================
        LOAD DATA
     ========================================================= */
 
-    if (!storedReport) {
-
+      if (!storedReport) {
         container.innerHTML = `
 
             <section class="glass-card empty-state">
@@ -1587,24 +1426,15 @@
             </section>
 
         `;
-
-    } else {
-
+      } else {
         try {
+          const data = JSON.parse(storedReport);
 
-            const data =
-                JSON.parse(storedReport);
-
-            renderResults(data);
-
+          renderResults(data);
         } catch (error) {
+          console.error("Could not read stored report:", error);
 
-            console.error(
-                "Could not read stored report:",
-                error
-            );
-
-            container.innerHTML = `
+          container.innerHTML = `
 
                 <section class="glass-card empty-state">
 
@@ -1632,10 +1462,7 @@
 
             `;
         }
-
-    }
-
-</script>
-
-</body>
+      }
+    </script>
+  </body>
 </html>

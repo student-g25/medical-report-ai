@@ -1,1863 +1,1339 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>Medify — AI Medical Report Assistant</title>
 
     <style>
-
-        /* =========================================================
+      /* =========================================================
            GLOBAL
         ========================================================= */
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-        html {
-            scroll-behavior: smooth;
-        }
+      html {
+        scroll-behavior: smooth;
+      }
 
-        body {
-            font-family: Arial, Helvetica, sans-serif;
+      body {
+        font-family: Arial, Helvetica, sans-serif;
 
-            background:
-                radial-gradient(
-                    circle at 15% 20%,
-                    rgba(103, 91, 255, 0.10),
-                    transparent 30%
-                ),
-                radial-gradient(
-                    circle at 85% 30%,
-                    rgba(42, 183, 185, 0.10),
-                    transparent 30%
-                ),
-                #f6f9fc;
+        background:
+          radial-gradient(
+            circle at 15% 20%,
+            rgba(103, 91, 255, 0.1),
+            transparent 30%
+          ),
+          radial-gradient(
+            circle at 85% 30%,
+            rgba(42, 183, 185, 0.1),
+            transparent 30%
+          ),
+          #f6f9fc;
 
-            color: #14213d;
+        color: #14213d;
 
-            min-height: 100vh;
+        min-height: 100vh;
 
-            transition:
-                background 0.4s ease,
-                color 0.4s ease;
-        }
+        transition:
+          background 0.4s ease,
+          color 0.4s ease;
+      }
 
-
-        /* =========================================================
+      /* =========================================================
            NAVBAR
         ========================================================= */
 
-        .navbar {
+      .navbar {
+        position: sticky;
 
-            position: sticky;
+        top: 18px;
 
-            top: 18px;
+        z-index: 1000;
 
-            z-index: 1000;
+        width: calc(100% - 72px);
 
-            width: calc(100% - 72px);
+        max-width: 1540px;
 
-            max-width: 1540px;
+        height: 108px;
 
-            height: 108px;
+        margin: 18px auto 0;
 
-            margin: 18px auto 0;
+        display: flex;
 
-            display: flex;
+        align-items: center;
 
-            align-items: center;
+        justify-content: space-between;
 
-            justify-content: space-between;
+        padding: 0 34px;
 
-            padding: 0 34px;
+        background: rgba(255, 255, 255, 0.9);
 
-            background: rgba(255, 255, 255, 0.90);
+        backdrop-filter: blur(18px);
 
-            backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
 
-            -webkit-backdrop-filter: blur(18px);
+        border: 1px solid rgba(255, 255, 255, 0.9);
 
-            border: 1px solid rgba(255, 255, 255, 0.9);
+        border-radius: 32px;
 
-            border-radius: 32px;
+        box-shadow: 0 18px 45px rgba(34, 54, 90, 0.08);
 
-            box-shadow:
-                0 18px 45px rgba(34, 54, 90, 0.08);
+        transition:
+          width 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+          height 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+          top 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+          padding 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+          border-radius 0.45s ease,
+          box-shadow 0.45s ease,
+          background 0.35s ease;
+      }
 
-            transition:
-                width 0.45s cubic-bezier(0.4, 0, 0.2, 1),
-                height 0.45s cubic-bezier(0.4, 0, 0.2, 1),
-                top 0.45s cubic-bezier(0.4, 0, 0.2, 1),
-                padding 0.45s cubic-bezier(0.4, 0, 0.2, 1),
-                border-radius 0.45s ease,
-                box-shadow 0.45s ease,
-                background 0.35s ease;
-        }
-
-
-        /* =========================================================
+      /* =========================================================
            MINIMIZED NAVBAR
         ========================================================= */
 
-        .navbar.scrolled {
+      .navbar.scrolled {
+        top: 10px;
 
-            top: 10px;
+        width: calc(100% - 130px);
 
-            width: calc(100% - 130px);
+        height: 72px;
 
-            height: 72px;
+        border-radius: 22px;
 
-            border-radius: 22px;
+        padding: 0 22px;
 
-            padding: 0 22px;
+        box-shadow: 0 18px 50px rgba(34, 54, 90, 0.15);
 
-            box-shadow:
-                0 18px 50px rgba(34, 54, 90, 0.15);
+        background: rgba(255, 255, 255, 0.78);
 
-            background: rgba(255, 255, 255, 0.78);
+        backdrop-filter: blur(28px);
 
-            backdrop-filter: blur(28px);
+        -webkit-backdrop-filter: blur(28px);
+      }
 
-            -webkit-backdrop-filter: blur(28px);
-        }
-
-
-        /* =========================================================
+      /* =========================================================
            LOGO
         ========================================================= */
 
-        .logo {
+      .logo {
+        display: flex;
 
-            display: flex;
+        align-items: center;
 
-            align-items: center;
+        gap: 20px;
 
-            gap: 20px;
+        text-decoration: none;
 
-            text-decoration: none;
+        color: #162440;
 
-            color: #162440;
+        flex-shrink: 0;
 
-            flex-shrink: 0;
+        transition: gap 0.45s ease;
+      }
 
-            transition:
-                gap 0.45s ease;
-        }
+      .site-logo {
+        display: block;
 
+        width: 190px;
+        height: 66px;
 
-        .logo-icon {
+        object-fit: contain;
+        object-position: left center;
 
-            width: 66px;
+        background: transparent;
 
-            height: 66px;
+        flex-shrink: 0;
 
-            display: flex;
+        transition:
+          width 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+          height 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+          opacity 0.45s ease;
+      }
 
-            align-items: center;
+      .navbar.scrolled .logo {
+        gap: 13px;
+      }
 
-            justify-content: center;
+      .navbar.scrolled .site-logo {
+        width: 145px;
+        height: 44px;
 
-            border-radius: 27px;
+        opacity: 0.96;
+      }
 
-            background:
-                linear-gradient(
-                    135deg,
-                    #5c70e8,
-                    #2db5b6
-                );
-
-            color: white;
-
-            font-size: 39px;
-
-            font-weight: 300;
-
-            box-shadow:
-                0 12px 28px rgba(70, 111, 220, 0.20);
-
-            transition:
-                width 0.45s cubic-bezier(0.4, 0, 0.2, 1),
-                height 0.45s cubic-bezier(0.4, 0, 0.2, 1),
-                border-radius 0.45s ease,
-                font-size 0.45s ease,
-                box-shadow 0.45s ease;
-        }
-
-
-        .logo-text {
-
-            font-size: 38px;
-
-            font-weight: 800;
-
-            letter-spacing: -1.8px;
-
-            transition:
-                font-size 0.45s cubic-bezier(0.4, 0, 0.2, 1),
-                letter-spacing 0.45s ease;
-        }
-
-
-        .logo-text span {
-            color: #4e9fdb;
-        }
-
-
-        /* Smaller logo when scrolling */
-
-        .navbar.scrolled .logo {
-            gap: 13px;
-        }
-
-
-        .navbar.scrolled .logo-icon {
-
-            width: 44px;
-
-            height: 44px;
-
-            border-radius: 14px;
-
-            font-size: 27px;
-
-            box-shadow:
-                0 8px 20px rgba(70, 111, 220, 0.18);
-        }
-
-
-        .navbar.scrolled .logo-text {
-
-            font-size: 27px;
-
-            letter-spacing: -1.2px;
-        }
-
-
-        /* =========================================================
+      /* =========================================================
            NAVIGATION
         ========================================================= */
 
-        .nav-right {
+      .nav-right {
+        display: flex;
 
-            display: flex;
+        align-items: center;
 
-            align-items: center;
+        gap: 14px;
+      }
 
-            gap: 14px;
-        }
+      .nav-links {
+        display: flex;
 
+        align-items: center;
 
-        .nav-links {
+        gap: 8px;
 
-            display: flex;
+        transition: gap 0.45s ease;
+      }
 
-            align-items: center;
+      .nav-link {
+        text-decoration: none;
 
-            gap: 8px;
+        color: #50627f;
 
-            transition:
-                gap 0.45s ease;
-        }
+        font-size: 19px;
 
+        font-weight: 500;
 
-        .nav-link {
+        padding: 17px 23px;
 
-            text-decoration: none;
+        border-radius: 18px;
 
-            color: #50627f;
+        transition:
+          background 0.25s ease,
+          color 0.25s ease,
+          transform 0.25s ease,
+          font-size 0.45s ease,
+          padding 0.45s ease;
+      }
 
-            font-size: 19px;
+      .nav-link:hover {
+        background: #f0f4ff;
 
-            font-weight: 500;
+        color: #243b68;
 
-            padding: 17px 23px;
+        transform: translateY(-1px);
+      }
 
-            border-radius: 18px;
+      /* Smaller navigation when scrolling */
 
-            transition:
-                background 0.25s ease,
-                color 0.25s ease,
-                transform 0.25s ease,
-                font-size 0.45s ease,
-                padding 0.45s ease;
-        }
+      .navbar.scrolled .nav-links {
+        gap: 2px;
+      }
 
+      .navbar.scrolled .nav-link {
+        font-size: 15px;
 
-        .nav-link:hover {
+        padding: 11px 15px;
 
-            background: #f0f4ff;
+        border-radius: 13px;
+      }
 
-            color: #243b68;
-
-            transform: translateY(-1px);
-        }
-
-
-        /* Smaller navigation when scrolling */
-
-        .navbar.scrolled .nav-links {
-            gap: 2px;
-        }
-
-
-        .navbar.scrolled .nav-link {
-
-            font-size: 15px;
-
-            padding: 11px 15px;
-
-            border-radius: 13px;
-        }
-
-
-        /* =========================================================
+      /* =========================================================
            UPLOAD BUTTON
         ========================================================= */
 
-        .upload-btn {
+      .upload-btn {
+        text-decoration: none;
 
-            text-decoration: none;
+        display: inline-flex;
 
-            display: inline-flex;
+        align-items: center;
 
-            align-items: center;
+        justify-content: center;
 
-            justify-content: center;
+        gap: 15px;
 
-            gap: 15px;
+        padding: 18px 28px;
 
-            padding: 18px 28px;
+        background: #1c2d50;
 
-            background: #1c2d50;
+        color: white;
 
-            color: white;
+        border-radius: 22px;
 
-            border-radius: 22px;
+        font-size: 18px;
 
-            font-size: 18px;
+        font-weight: 700;
 
-            font-weight: 700;
+        box-shadow: 0 12px 25px rgba(25, 42, 76, 0.16);
 
-            box-shadow:
-                0 12px 25px rgba(25, 42, 76, 0.16);
+        transition:
+          transform 0.25s ease,
+          box-shadow 0.25s ease,
+          padding 0.45s ease,
+          font-size 0.45s ease,
+          border-radius 0.45s ease,
+          gap 0.45s ease;
+      }
 
-            transition:
-                transform 0.25s ease,
-                box-shadow 0.25s ease,
-                padding 0.45s ease,
-                font-size 0.45s ease,
-                border-radius 0.45s ease,
-                gap 0.45s ease;
-        }
+      .upload-btn:hover {
+        transform: translateY(-3px);
 
+        box-shadow: 0 18px 30px rgba(25, 42, 76, 0.23);
+      }
 
-        .upload-btn:hover {
+      .navbar.scrolled .upload-btn {
+        padding: 12px 19px;
 
-            transform: translateY(-3px);
+        gap: 9px;
 
-            box-shadow:
-                0 18px 30px rgba(25, 42, 76, 0.23);
-        }
+        border-radius: 15px;
 
+        font-size: 15px;
+      }
 
-        .navbar.scrolled .upload-btn {
+      .arrow {
+        font-size: 24px;
 
-            padding: 12px 19px;
+        line-height: 1;
 
-            gap: 9px;
+        transition: font-size 0.45s ease;
+      }
 
-            border-radius: 15px;
+      .navbar.scrolled .arrow {
+        font-size: 19px;
+      }
 
-            font-size: 15px;
-        }
-
-
-        .arrow {
-
-            font-size: 24px;
-
-            line-height: 1;
-
-            transition:
-                font-size 0.45s ease;
-        }
-
-
-        .navbar.scrolled .arrow {
-            font-size: 19px;
-        }
-
-
-        /* =========================================================
+      /* =========================================================
            THEME BUTTON
         ========================================================= */
 
-        .theme-btn {
+      .theme-btn {
+        width: 64px;
 
-            width: 64px;
+        height: 64px;
 
-            height: 64px;
+        border-radius: 22px;
 
-            border-radius: 22px;
+        border: 1px solid #e0e6f4;
 
-            border: 1px solid #e0e6f4;
+        background: rgba(255, 255, 255, 0.9);
 
-            background: rgba(255,255,255,0.9);
+        display: flex;
 
-            display: flex;
+        align-items: center;
 
-            align-items: center;
+        justify-content: center;
 
-            justify-content: center;
+        font-size: 26px;
 
-            font-size: 26px;
+        cursor: pointer;
 
-            cursor: pointer;
+        transition:
+          0.25s ease,
+          width 0.45s ease,
+          height 0.45s ease,
+          border-radius 0.45s ease,
+          font-size 0.45s ease;
+      }
 
-            transition:
-                0.25s ease,
-                width 0.45s ease,
-                height 0.45s ease,
-                border-radius 0.45s ease,
-                font-size 0.45s ease;
-        }
+      .theme-btn:hover {
+        background: #f1f4ff;
 
+        transform: rotate(10deg);
+      }
 
-        .theme-btn:hover {
+      .navbar.scrolled .theme-btn {
+        width: 46px;
 
-            background: #f1f4ff;
+        height: 46px;
 
-            transform: rotate(10deg);
-        }
+        border-radius: 14px;
 
+        font-size: 21px;
+      }
 
-        .navbar.scrolled .theme-btn {
-
-            width: 46px;
-
-            height: 46px;
-
-            border-radius: 14px;
-
-            font-size: 21px;
-        }
-
-
-        /* =========================================================
+      /* =========================================================
            HERO
         ========================================================= */
 
-        .hero {
+      .hero {
+        width: calc(100% - 72px);
 
-            width: calc(100% - 72px);
+        max-width: 1540px;
 
-            max-width: 1540px;
+        margin: 45px auto 0;
 
-            margin: 45px auto 0;
+        min-height: 650px;
 
-            min-height: 650px;
+        display: grid;
 
-            display: grid;
+        grid-template-columns: 1fr 0.88fr;
 
-            grid-template-columns: 1fr 0.88fr;
+        align-items: center;
 
-            align-items: center;
+        gap: 50px;
 
-            gap: 50px;
+        padding: 50px 34px 70px;
+      }
 
-            padding: 50px 34px 70px;
-        }
+      .hero-left {
+        padding-left: 5px;
+      }
 
+      .badge {
+        display: inline-flex;
 
-        .hero-left {
-            padding-left: 5px;
-        }
+        align-items: center;
 
+        gap: 12px;
 
-        .badge {
+        padding: 13px 22px;
 
-            display: inline-flex;
+        background: rgba(255, 255, 255, 0.78);
 
-            align-items: center;
+        border: 1px solid #e0e6f2;
 
-            gap: 12px;
+        border-radius: 40px;
 
-            padding: 13px 22px;
+        color: #24a5ad;
 
-            background: rgba(255,255,255,0.78);
+        font-size: 17px;
 
-            border: 1px solid #e0e6f2;
+        font-weight: 700;
 
-            border-radius: 40px;
+        margin-bottom: 38px;
+      }
 
-            color: #24a5ad;
+      .badge-dot {
+        width: 13px;
 
-            font-size: 17px;
+        height: 13px;
 
-            font-weight: 700;
+        border-radius: 50%;
 
-            margin-bottom: 38px;
-        }
+        background: #29afa5;
+      }
 
+      .hero-title {
+        font-size: clamp(60px, 6vw, 96px);
 
-        .badge-dot {
+        line-height: 0.98;
 
-            width: 13px;
+        letter-spacing: -5px;
 
-            height: 13px;
+        font-weight: 800;
 
-            border-radius: 50%;
+        color: #0d1b35;
 
-            background: #29afa5;
-        }
+        max-width: 850px;
+      }
 
+      .hero-title .gradient {
+        display: block;
 
-        .hero-title {
+        background: linear-gradient(90deg, #5964df, #409dc9);
 
-            font-size: clamp(60px, 6vw, 96px);
+        -webkit-background-clip: text;
 
-            line-height: 0.98;
+        background-clip: text;
 
-            letter-spacing: -5px;
+        color: transparent;
+      }
 
-            font-weight: 800;
+      .hero-description {
+        margin-top: 42px;
 
-            color: #0d1b35;
+        max-width: 720px;
 
-            max-width: 850px;
-        }
+        color: #657897;
 
+        font-size: 20px;
 
-        .hero-title .gradient {
+        line-height: 1.75;
+      }
 
-            display: block;
+      .hero-actions {
+        margin-top: 36px;
 
-            background:
-                linear-gradient(
-                    90deg,
-                    #5964df,
-                    #409dc9
-                );
+        display: flex;
 
-            -webkit-background-clip: text;
+        align-items: center;
 
-            background-clip: text;
+        gap: 18px;
+      }
 
-            color: transparent;
-        }
+      .primary-btn {
+        display: inline-flex;
 
+        align-items: center;
 
-        .hero-description {
+        gap: 14px;
 
-            margin-top: 42px;
+        padding: 19px 30px;
 
-            max-width: 720px;
+        background: #1c2d50;
 
-            color: #657897;
+        color: white;
 
-            font-size: 20px;
+        text-decoration: none;
 
-            line-height: 1.75;
-        }
+        border-radius: 18px;
 
+        font-size: 18px;
 
-        .hero-actions {
+        font-weight: 700;
 
-            margin-top: 36px;
+        transition: 0.25s ease;
+      }
 
-            display: flex;
+      .primary-btn:hover {
+        transform: translateY(-3px);
 
-            align-items: center;
+        box-shadow: 0 14px 28px rgba(27, 43, 76, 0.2);
+      }
 
-            gap: 18px;
-        }
+      .secondary-btn {
+        display: inline-flex;
 
+        align-items: center;
 
-        .primary-btn {
+        padding: 18px 26px;
 
-            display: inline-flex;
+        border-radius: 18px;
 
-            align-items: center;
+        color: #526684;
 
-            gap: 14px;
+        border: 1px solid #dce4f2;
 
-            padding: 19px 30px;
+        background: rgba(255, 255, 255, 0.7);
 
-            background: #1c2d50;
+        text-decoration: none;
 
-            color: white;
+        font-weight: 600;
 
-            text-decoration: none;
+        transition: 0.25s ease;
+      }
 
-            border-radius: 18px;
+      .secondary-btn:hover {
+        background: white;
 
-            font-size: 18px;
+        transform: translateY(-2px);
+      }
 
-            font-weight: 700;
-
-            transition: 0.25s ease;
-        }
-
-
-        .primary-btn:hover {
-
-            transform: translateY(-3px);
-
-            box-shadow:
-                0 14px 28px rgba(27,43,76,0.20);
-        }
-
-
-        .secondary-btn {
-
-            display: inline-flex;
-
-            align-items: center;
-
-            padding: 18px 26px;
-
-            border-radius: 18px;
-
-            color: #526684;
-
-            border: 1px solid #dce4f2;
-
-            background: rgba(255,255,255,0.7);
-
-            text-decoration: none;
-
-            font-weight: 600;
-
-            transition: 0.25s ease;
-        }
-
-
-        .secondary-btn:hover {
-
-            background: white;
-
-            transform: translateY(-2px);
-        }
-
-
-        /* =========================================================
+      /* =========================================================
            REPORT CARD
         ========================================================= */
 
-        .report-card {
+      .report-card {
+        position: relative;
 
-            position: relative;
+        width: 100%;
 
-            width: 100%;
+        max-width: 630px;
 
-            max-width: 630px;
+        margin-left: auto;
 
-            margin-left: auto;
+        padding: 42px;
 
-            padding: 42px;
+        background: rgba(255, 255, 255, 0.94);
 
-            background: rgba(255,255,255,0.94);
+        border-radius: 40px;
 
-            border-radius: 40px;
+        border: 1px solid rgba(226, 233, 244, 0.9);
 
-            border: 1px solid rgba(226,233,244,0.9);
+        box-shadow: 0 30px 70px rgba(55, 78, 111, 0.12);
 
-            box-shadow:
-                0 30px 70px rgba(55,78,111,0.12);
+        overflow: hidden;
+      }
 
-            overflow: hidden;
-        }
+      .report-card::before {
+        content: "";
 
+        position: absolute;
 
-        .report-card::before {
+        width: 220px;
 
-            content: "";
+        height: 220px;
 
-            position: absolute;
+        right: -80px;
 
-            width: 220px;
+        top: -90px;
 
-            height: 220px;
+        border-radius: 50%;
 
-            right: -80px;
+        background: rgba(77, 170, 208, 0.1);
+      }
 
-            top: -90px;
+      .report-header {
+        display: flex;
 
-            border-radius: 50%;
+        align-items: center;
 
-            background:
-                rgba(77, 170, 208, 0.10);
-        }
+        justify-content: space-between;
 
+        margin-bottom: 32px;
+      }
 
-        .report-header {
+      .small-title {
+        font-size: 14px;
 
-            display: flex;
+        letter-spacing: 2px;
 
-            align-items: center;
+        color: #8998b0;
 
-            justify-content: space-between;
+        font-weight: 700;
+      }
 
-            margin-bottom: 32px;
-        }
+      .report-heading {
+        font-size: 32px;
 
+        margin-top: 9px;
 
-        .small-title {
+        color: #162440;
+      }
 
-            font-size: 14px;
+      .ready {
+        display: flex;
 
-            letter-spacing: 2px;
+        align-items: center;
 
-            color: #8998b0;
+        gap: 8px;
 
-            font-weight: 700;
-        }
+        padding: 11px 17px;
 
+        background: #e8f7f4;
 
-        .report-heading {
+        color: #2ba79e;
 
-            font-size: 32px;
+        border-radius: 30px;
 
-            margin-top: 9px;
+        font-size: 14px;
 
-            color: #162440;
-        }
+        font-weight: 700;
+      }
 
+      .ready-dot {
+        width: 9px;
 
-        .ready {
+        height: 9px;
 
-            display: flex;
+        border-radius: 50%;
 
-            align-items: center;
+        background: #2ba79e;
+      }
 
-            gap: 8px;
+      .patient-box {
+        display: flex;
 
-            padding: 11px 17px;
+        align-items: center;
 
-            background: #e8f7f4;
+        gap: 20px;
 
-            color: #2ba79e;
+        padding: 22px;
 
-            border-radius: 30px;
+        border-radius: 22px;
 
-            font-size: 14px;
+        background: #fbfcff;
 
-            font-weight: 700;
-        }
+        border: 1px solid #edf1f7;
+      }
 
+      .patient-icon {
+        width: 62px;
 
-        .ready-dot {
+        height: 62px;
 
-            width: 9px;
+        display: flex;
 
-            height: 9px;
+        align-items: center;
 
-            border-radius: 50%;
+        justify-content: center;
 
-            background: #2ba79e;
-        }
+        border-radius: 20px;
 
+        background: #edf0ff;
 
-        .patient-box {
+        color: #5d6ee5;
 
-            display: flex;
+        font-size: 32px;
+      }
 
-            align-items: center;
+      .patient-title {
+        font-size: 18px;
 
-            gap: 20px;
+        font-weight: 700;
 
-            padding: 22px;
+        color: #182640;
+      }
 
-            border-radius: 22px;
+      .patient-subtitle {
+        margin-top: 7px;
 
-            background: #fbfcff;
+        color: #8795aa;
 
-            border: 1px solid #edf1f7;
-        }
+        font-size: 14px;
+      }
 
+      .results {
+        margin-top: 18px;
 
-        .patient-icon {
+        padding: 24px;
 
-            width: 62px;
+        border-radius: 22px;
 
-            height: 62px;
+        border: 1px solid #edf1f7;
 
-            display: flex;
+        background: white;
+      }
 
-            align-items: center;
+      .result-label {
+        color: #8998b0;
 
-            justify-content: center;
+        font-size: 12px;
 
-            border-radius: 20px;
+        letter-spacing: 1.5px;
 
-            background: #edf0ff;
+        font-weight: 700;
+      }
 
-            color: #5d6ee5;
+      .result-value {
+        margin-top: 8px;
 
-            font-size: 32px;
-        }
+        font-size: 18px;
 
+        font-weight: 700;
 
-        .patient-title {
+        color: #1a2944;
+      }
 
-            font-size: 18px;
+      .progress {
+        height: 10px;
 
-            font-weight: 700;
+        margin-top: 28px;
 
-            color: #182640;
-        }
+        border-radius: 20px;
 
+        background: #eef2f8;
 
-        .patient-subtitle {
+        overflow: hidden;
+      }
 
-            margin-top: 7px;
+      .progress span {
+        display: block;
 
-            color: #8795aa;
+        width: 78%;
 
-            font-size: 14px;
-        }
+        height: 100%;
 
+        border-radius: inherit;
 
-        .results {
+        background: linear-gradient(90deg, #5e70e6, #42a6c4);
+      }
 
-            margin-top: 18px;
-
-            padding: 24px;
-
-            border-radius: 22px;
-
-            border: 1px solid #edf1f7;
-
-            background: white;
-        }
-
-
-        .result-label {
-
-            color: #8998b0;
-
-            font-size: 12px;
-
-            letter-spacing: 1.5px;
-
-            font-weight: 700;
-        }
-
-
-        .result-value {
-
-            margin-top: 8px;
-
-            font-size: 18px;
-
-            font-weight: 700;
-
-            color: #1a2944;
-        }
-
-
-        .progress {
-
-            height: 10px;
-
-            margin-top: 28px;
-
-            border-radius: 20px;
-
-            background: #eef2f8;
-
-            overflow: hidden;
-        }
-
-
-        .progress span {
-
-            display: block;
-
-            width: 78%;
-
-            height: 100%;
-
-            border-radius: inherit;
-
-            background:
-                linear-gradient(
-                    90deg,
-                    #5e70e6,
-                    #42a6c4
-                );
-        }
-
-
-        /* =========================================================
+      /* =========================================================
            FEATURES
         ========================================================= */
 
-        .features {
+      .features {
+        width: calc(100% - 72px);
 
-            width: calc(100% - 72px);
+        max-width: 1450px;
 
-            max-width: 1450px;
+        margin: 20px auto 90px;
 
-            margin: 20px auto 90px;
+        display: grid;
 
-            display: grid;
+        grid-template-columns: repeat(3, 1fr);
 
-            grid-template-columns:
-                repeat(3, 1fr);
+        gap: 24px;
+      }
 
-            gap: 24px;
-        }
+      .feature {
+        padding: 32px;
 
+        border-radius: 28px;
 
-        .feature {
+        background: rgba(255, 255, 255, 0.75);
 
-            padding: 32px;
+        border: 1px solid #e4eaf4;
 
-            border-radius: 28px;
+        box-shadow: 0 15px 40px rgba(50, 70, 100, 0.05);
+      }
 
-            background: rgba(255,255,255,0.75);
+      .feature-icon {
+        width: 54px;
 
-            border: 1px solid #e4eaf4;
+        height: 54px;
 
-            box-shadow:
-                0 15px 40px rgba(50,70,100,0.05);
-        }
+        border-radius: 17px;
 
+        display: flex;
 
-        .feature-icon {
+        align-items: center;
 
-            width: 54px;
+        justify-content: center;
 
-            height: 54px;
+        background: #eef1ff;
 
-            border-radius: 17px;
+        color: #596be0;
 
-            display: flex;
+        font-size: 25px;
 
-            align-items: center;
+        margin-bottom: 20px;
+      }
 
-            justify-content: center;
+      .feature h3 {
+        font-size: 21px;
 
-            background: #eef1ff;
+        margin-bottom: 10px;
+      }
 
-            color: #596be0;
+      .feature p {
+        color: #71819c;
 
-            font-size: 25px;
+        line-height: 1.6;
 
-            margin-bottom: 20px;
-        }
+        font-size: 15px;
+      }
 
-
-        .feature h3 {
-
-            font-size: 21px;
-
-            margin-bottom: 10px;
-        }
-
-
-        .feature p {
-
-            color: #71819c;
-
-            line-height: 1.6;
-
-            font-size: 15px;
-        }
-
-
-        /* =========================================================
+      /* =========================================================
            FOOTER
         ========================================================= */
 
-        footer {
+      footer {
+        width: calc(100% - 72px);
 
-            width: calc(100% - 72px);
+        max-width: 1450px;
 
-            max-width: 1450px;
+        margin: 0 auto 40px;
 
-            margin: 0 auto 40px;
+        padding: 25px 0;
 
-            padding: 25px 0;
+        border-top: 1px solid #e0e6f0;
 
-            border-top: 1px solid #e0e6f0;
+        color: #8795aa;
 
-            color: #8795aa;
+        text-align: center;
 
-            text-align: center;
+        font-size: 14px;
+      }
 
-            font-size: 14px;
-        }
-
-
-        /* =========================================================
+      /* =========================================================
            DARK MODE
         ========================================================= */
 
-        body.dark {
+      body.dark {
+        background:
+          radial-gradient(
+            circle at 20% 20%,
+            rgba(85, 98, 200, 0.18),
+            transparent 30%
+          ),
+          #101827;
 
-            background:
-                radial-gradient(
-                    circle at 20% 20%,
-                    rgba(85, 98, 200, 0.18),
-                    transparent 30%
-                ),
-                #101827;
+        color: #f3f6ff;
+      }
 
-            color: #f3f6ff;
-        }
+      body.dark .navbar {
+        background: rgba(18, 29, 47, 0.9);
 
+        border-color: rgba(60, 76, 105, 0.65);
+      }
 
-        body.dark .navbar {
+      body.dark .navbar.scrolled {
+        background: rgba(18, 29, 47, 0.78);
 
-            background: rgba(18, 29, 47, 0.90);
+        box-shadow: 0 18px 50px rgba(0, 0, 0, 0.3);
+      }
 
-            border-color: rgba(60, 76, 105, 0.65);
-        }
+      body.dark .navbar,
+      body.dark .report-card,
+      body.dark .feature,
+      body.dark .secondary-btn {
+        background: rgba(24, 35, 55, 0.92);
 
+        border-color: #2b3850;
+      }
 
-        body.dark .navbar.scrolled {
+      body.dark .nav-link {
+        color: #b9c5db;
+      }
 
-            background: rgba(18, 29, 47, 0.78);
+      body.dark .nav-link:hover {
+        background: #27344d;
 
-            box-shadow:
-                0 18px 50px rgba(0, 0, 0, 0.30);
-        }
+        color: white;
+      }
 
+      body.dark .logo-text,
+      body.dark .hero-title,
+      body.dark .report-heading,
+      body.dark .patient-title,
+      body.dark .result-value,
+      body.dark .feature h3 {
+        color: white;
+      }
 
-        body.dark .navbar,
-        body.dark .report-card,
-        body.dark .feature,
-        body.dark .secondary-btn {
+      body.dark .hero-description,
+      body.dark .feature p,
+      body.dark .patient-subtitle {
+        color: #a5b3ca;
+      }
 
-            background: rgba(24,35,55,0.92);
+      body.dark .theme-btn {
+        background: #1a263c;
 
-            border-color: #2b3850;
-        }
+        border-color: #33405a;
 
+        color: white;
+      }
 
-        body.dark .nav-link {
+      body.dark .patient-box,
+      body.dark .results {
+        background: #172238;
 
-            color: #b9c5db;
-        }
+        border-color: #2d3a51;
+      }
 
+      body.dark footer {
+        border-color: #2c3850;
+      }
 
-        body.dark .nav-link:hover {
-
-            background: #27344d;
-
-            color: white;
-        }
-
-
-        body.dark .logo-text,
-        body.dark .hero-title,
-        body.dark .report-heading,
-        body.dark .patient-title,
-        body.dark .result-value,
-        body.dark .feature h3 {
-
-            color: white;
-        }
-
-
-        body.dark .hero-description,
-        body.dark .feature p,
-        body.dark .patient-subtitle {
-
-            color: #a5b3ca;
-        }
-
-
-        body.dark .theme-btn {
-
-            background: #1a263c;
-
-            border-color: #33405a;
-
-            color: white;
-        }
-
-
-        body.dark .patient-box,
-        body.dark .results {
-
-            background: #172238;
-
-            border-color: #2d3a51;
-        }
-
-
-        body.dark footer {
-
-            border-color: #2c3850;
-        }
-
-
-        /* =========================================================
+      /* =========================================================
            RESPONSIVE — TABLET
         ========================================================= */
 
-        @media (max-width: 1100px) {
+      @media (max-width: 1100px) {
+        .navbar {
+          width: calc(100% - 36px);
 
-            .navbar {
-
-                width: calc(100% - 36px);
-
-                padding: 0 22px;
-            }
-
-
-            .nav-link {
-
-                padding: 14px 12px;
-            }
-
-
-            .upload-btn {
-
-                padding: 16px 20px;
-            }
-
-
-            .hero {
-
-                grid-template-columns: 1fr;
-
-                padding-top: 60px;
-            }
-
-
-            .report-card {
-
-                margin: 0 auto;
-            }
-
-
-            .navbar.scrolled {
-
-                width: calc(100% - 60px);
-            }
+          padding: 0 22px;
         }
 
+        .nav-link {
+          padding: 14px 12px;
+        }
 
-        /* =========================================================
+        .upload-btn {
+          padding: 16px 20px;
+        }
+
+        .hero {
+          grid-template-columns: 1fr;
+
+          padding-top: 60px;
+        }
+
+        .report-card {
+          margin: 0 auto;
+        }
+
+        .navbar.scrolled {
+          width: calc(100% - 60px);
+        }
+      }
+
+      /* =========================================================
            RESPONSIVE — MOBILE
         ========================================================= */
 
-        @media (max-width: 750px) {
+      @media (max-width: 750px) {
+        .navbar {
+          height: auto;
 
-            .navbar {
+          min-height: 82px;
 
-                height: auto;
+          padding: 14px 18px;
 
-                min-height: 82px;
+          border-radius: 25px;
 
-                padding: 14px 18px;
+          flex-wrap: wrap;
 
-                border-radius: 25px;
-
-                flex-wrap: wrap;
-
-                gap: 12px;
-            }
-
-
-            .navbar.scrolled {
-
-                width: calc(100% - 24px);
-
-                height: auto;
-
-                min-height: 64px;
-
-                padding: 10px 14px;
-
-                border-radius: 20px;
-            }
-
-
-            .logo {
-
-                gap: 10px;
-            }
-
-
-            .logo-icon {
-
-                width: 50px;
-
-                height: 50px;
-
-                border-radius: 18px;
-
-                font-size: 30px;
-            }
-
-
-            .logo-text {
-
-                font-size: 28px;
-            }
-
-
-            .navbar.scrolled .logo-icon {
-
-                width: 40px;
-
-                height: 40px;
-
-                border-radius: 13px;
-
-                font-size: 25px;
-            }
-
-
-            .navbar.scrolled .logo-text {
-
-                font-size: 24px;
-            }
-
-
-            .nav-right {
-
-                width: 100%;
-
-                justify-content: space-between;
-            }
-
-
-            .nav-links {
-
-                display: none;
-            }
-
-
-            .upload-btn {
-
-                flex: 1;
-            }
-
-
-            .navbar.scrolled .upload-btn {
-
-                padding: 11px 16px;
-
-                font-size: 14px;
-            }
-
-
-            .theme-btn {
-
-                width: 55px;
-
-                height: 55px;
-            }
-
-
-            .navbar.scrolled .theme-btn {
-
-                width: 46px;
-
-                height: 46px;
-            }
-
-
-            .hero {
-
-                width: calc(100% - 30px);
-
-                padding: 40px 10px;
-
-                margin-top: 25px;
-            }
-
-
-            .hero-title {
-
-                font-size: 55px;
-
-                letter-spacing: -3px;
-            }
-
-
-            .hero-description {
-
-                font-size: 17px;
-            }
-
-
-            .report-card {
-
-                padding: 26px;
-
-                border-radius: 30px;
-            }
-
-
-            .features {
-
-                width: calc(100% - 30px);
-
-                grid-template-columns: 1fr;
-            }
-
-
-            footer {
-
-                width: calc(100% - 30px);
-            }
+          gap: 12px;
         }
 
+        .navbar.scrolled {
+          width: calc(100% - 24px);
 
-        /* =========================================================
+          height: auto;
+
+          min-height: 64px;
+
+          padding: 10px 14px;
+
+          border-radius: 20px;
+        }
+
+        .logo {
+          gap: 10px;
+        }
+
+        .logo-icon {
+          width: 50px;
+
+          height: 50px;
+
+          border-radius: 18px;
+
+          font-size: 30px;
+        }
+
+        .logo-text {
+          font-size: 28px;
+        }
+
+        .navbar.scrolled .logo-icon {
+          width: 40px;
+
+          height: 40px;
+
+          border-radius: 13px;
+
+          font-size: 25px;
+        }
+
+        .navbar.scrolled .logo-text {
+          font-size: 24px;
+        }
+
+        .nav-right {
+          width: 100%;
+
+          justify-content: space-between;
+        }
+
+        .nav-links {
+          display: none;
+        }
+
+        .upload-btn {
+          flex: 1;
+        }
+
+        .navbar.scrolled .upload-btn {
+          padding: 11px 16px;
+
+          font-size: 14px;
+        }
+
+        .theme-btn {
+          width: 55px;
+
+          height: 55px;
+        }
+
+        .navbar.scrolled .theme-btn {
+          width: 46px;
+
+          height: 46px;
+        }
+
+        .hero {
+          width: calc(100% - 30px);
+
+          padding: 40px 10px;
+
+          margin-top: 25px;
+        }
+
+        .hero-title {
+          font-size: 55px;
+
+          letter-spacing: -3px;
+        }
+
+        .hero-description {
+          font-size: 17px;
+        }
+
+        .report-card {
+          padding: 26px;
+
+          border-radius: 30px;
+        }
+
+        .features {
+          width: calc(100% - 30px);
+
+          grid-template-columns: 1fr;
+        }
+
+        footer {
+          width: calc(100% - 30px);
+        }
+      }
+
+      /* =========================================================
            REDUCED MOTION
         ========================================================= */
 
-        @media (prefers-reduced-motion: reduce) {
-
-            html {
-                scroll-behavior: auto;
-            }
-
-            * {
-                transition-duration: 0.01ms !important;
-            }
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
         }
 
+        * {
+          transition-duration: 0.01ms !important;
+        }
+      }
     </style>
-</head>
+  </head>
 
-
-<body>
-
-
+  <body>
     <!-- =========================================================
          NAVBAR
     ========================================================= -->
 
     <header class="navbar" id="navbar">
+      <a href="#home" class="logo" aria-label="Medify home">
+        <img src="assets/medify-logo.png" alt="Medify" class="site-logo" />
+      </a>
 
-        <a href="index.html" class="logo">
+      <div class="nav-right">
+        <nav class="nav-links">
+          <a href="index.html" class="nav-link"> Home </a>
 
-            <div class="logo-icon">
-                +
-            </div>
+          <a href="#how-it-works" class="nav-link"> How it works </a>
 
-            <div class="logo-text">
-                Medi<span>fy</span>
-            </div>
+          <a href="#features" class="nav-link"> Features </a>
+        </nav>
 
+        <!-- WORKING UPLOAD BUTTON -->
+
+        <a href="upload.html" class="upload-btn">
+          Upload Report
+
+          <span class="arrow"> → </span>
         </a>
 
+        <!-- THEME BUTTON -->
 
-        <div class="nav-right">
-
-            <nav class="nav-links">
-
-                <a href="index.html" class="nav-link">
-                    Home
-                </a>
-
-                <a href="#how-it-works" class="nav-link">
-                    How it works
-                </a>
-
-                <a href="#features" class="nav-link">
-                    Features
-                </a>
-
-            </nav>
-
-
-            <!-- WORKING UPLOAD BUTTON -->
-
-            <a
-                href="upload.html"
-                class="upload-btn"
-            >
-                Upload Report
-
-                <span class="arrow">
-                    →
-                </span>
-            </a>
-
-
-            <!-- THEME BUTTON -->
-
-            <button
-                class="theme-btn"
-                id="themeButton"
-                aria-label="Toggle theme"
-                type="button"
-            >
-                ☀
-            </button>
-
-        </div>
-
+        <button
+          class="theme-btn"
+          id="themeButton"
+          aria-label="Toggle theme"
+          type="button"
+        >
+          ☀
+        </button>
+      </div>
     </header>
-
-
 
     <!-- =========================================================
          MAIN
     ========================================================= -->
 
     <main>
-
-
-        <!-- =====================================================
+      <!-- =====================================================
              HERO
         ====================================================== -->
 
-        <section class="hero">
+      <section class="hero">
+        <div class="hero-left">
+          <div class="badge">
+            <span class="badge-dot"></span>
 
-            <div class="hero-left">
+            AI-Powered Medical Report Assistant
+          </div>
 
+          <h1 class="hero-title">
+            Understand your
 
-                <div class="badge">
+            <span class="gradient"> medical report. </span>
+          </h1>
 
-                    <span class="badge-dot"></span>
+          <p class="hero-description">
+            Medical reports contain important information, but they aren't
+            always easy to understand. Medify helps turn complex report
+            information into clearer, easier-to-follow explanations.
+          </p>
 
-                    AI-Powered Medical Report Assistant
+          <div class="hero-actions">
+            <a href="upload.html" class="primary-btn">
+              Upload Report
 
-                </div>
+              <span> → </span>
+            </a>
 
+            <a href="#how-it-works" class="secondary-btn"> See how it works </a>
+          </div>
+        </div>
 
-
-                <h1 class="hero-title">
-
-                    Understand your
-
-                    <span class="gradient">
-                        medical report.
-                    </span>
-
-                </h1>
-
-
-
-                <p class="hero-description">
-
-                    Medical reports contain important information,
-                    but they aren't always easy to understand.
-                    Medify helps turn complex report information
-                    into clearer, easier-to-follow explanations.
-
-                </p>
-
-
-
-                <div class="hero-actions">
-
-
-                    <a
-                        href="upload.html"
-                        class="primary-btn"
-                    >
-
-                        Upload Report
-
-                        <span>
-                            →
-                        </span>
-
-                    </a>
-
-
-
-                    <a
-                        href="#how-it-works"
-                        class="secondary-btn"
-                    >
-
-                        See how it works
-
-                    </a>
-
-                </div>
-
-            </div>
-
-
-
-            <!-- =================================================
+        <!-- =================================================
                  REPORT PREVIEW
             ================================================== -->
 
-            <div class="report-card">
+        <div class="report-card">
+          <div class="report-header">
+            <div>
+              <div class="small-title">MEDICAL REPORT</div>
 
-
-                <div class="report-header">
-
-
-                    <div>
-
-                        <div class="small-title">
-                            MEDICAL REPORT
-                        </div>
-
-                        <h2 class="report-heading">
-                            Report Overview
-                        </h2>
-
-                    </div>
-
-
-
-                    <div class="ready">
-
-                        <span class="ready-dot"></span>
-
-                        Ready
-
-                    </div>
-
-                </div>
-
-
-
-                <div class="patient-box">
-
-
-                    <div class="patient-icon">
-                        +
-                    </div>
-
-
-                    <div>
-
-                        <div class="patient-title">
-                            Patient report
-                        </div>
-
-                        <div class="patient-subtitle">
-                            Analysis ready
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-
-                <div class="results">
-
-
-                    <div class="result-label">
-                        RESULTS
-                    </div>
-
-
-                    <div class="result-value">
-                        Structured & simplified
-                    </div>
-
-
-                    <div class="progress">
-
-                        <span></span>
-
-                    </div>
-
-                </div>
-
+              <h2 class="report-heading">Report Overview</h2>
             </div>
 
-        </section>
+            <div class="ready">
+              <span class="ready-dot"></span>
 
+              Ready
+            </div>
+          </div>
 
+          <div class="patient-box">
+            <div class="patient-icon">+</div>
 
-        <!-- =====================================================
+            <div>
+              <div class="patient-title">Patient report</div>
+
+              <div class="patient-subtitle">Analysis ready</div>
+            </div>
+          </div>
+
+          <div class="results">
+            <div class="result-label">RESULTS</div>
+
+            <div class="result-value">Structured & simplified</div>
+
+            <div class="progress">
+              <span></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================
              HOW IT WORKS
         ====================================================== -->
 
-        <section
-            class="features"
-            id="how-it-works"
-        >
+      <section class="features" id="how-it-works">
+        <div class="feature">
+          <div class="feature-icon">1</div>
 
+          <h3>Upload your report</h3>
 
-            <div class="feature">
+          <p>
+            Upload a supported medical report through the secure report upload
+            page.
+          </p>
+        </div>
 
+        <div class="feature">
+          <div class="feature-icon">2</div>
 
-                <div class="feature-icon">
-                    1
-                </div>
+          <h3>Report analysis</h3>
 
+          <p>
+            The uploaded information can be processed and structured by the
+            existing backend.
+          </p>
+        </div>
 
-                <h3>
-                    Upload your report
-                </h3>
+        <div class="feature">
+          <div class="feature-icon">3</div>
 
+          <h3>Easier explanation</h3>
 
-                <p>
+          <p>
+            Complex medical information can be presented in a clearer and
+            easier-to-follow format.
+          </p>
+        </div>
+      </section>
 
-                    Upload a supported medical report
-                    through the secure report upload page.
-
-                </p>
-
-            </div>
-
-
-
-            <div class="feature">
-
-
-                <div class="feature-icon">
-                    2
-                </div>
-
-
-                <h3>
-                    Report analysis
-                </h3>
-
-
-                <p>
-
-                    The uploaded information can be processed
-                    and structured by the existing backend.
-
-                </p>
-
-            </div>
-
-
-
-            <div class="feature">
-
-
-                <div class="feature-icon">
-                    3
-                </div>
-
-
-                <h3>
-                    Easier explanation
-                </h3>
-
-
-                <p>
-
-                    Complex medical information can be presented
-                    in a clearer and easier-to-follow format.
-
-                </p>
-
-            </div>
-
-        </section>
-
-
-
-        <!-- =====================================================
+      <!-- =====================================================
              FEATURES
         ====================================================== -->
 
-        <section
-            class="features"
-            id="features"
-        >
+      <section class="features" id="features">
+        <div class="feature">
+          <div class="feature-icon">✦</div>
 
+          <h3>AI Assistance</h3>
 
-            <div class="feature">
+          <p>
+            Designed to make medical report information easier to understand.
+          </p>
+        </div>
 
+        <div class="feature">
+          <div class="feature-icon">✓</div>
 
-                <div class="feature-icon">
-                    ✦
-                </div>
+          <h3>Structured Results</h3>
 
+          <p>
+            Important report information can be organized into readable
+            sections.
+          </p>
+        </div>
 
-                <h3>
-                    AI Assistance
-                </h3>
+        <div class="feature">
+          <div class="feature-icon">!</div>
 
+          <h3>Educational Information</h3>
 
-                <p>
-
-                    Designed to make medical report information
-                    easier to understand.
-
-                </p>
-
-            </div>
-
-
-
-            <div class="feature">
-
-
-                <div class="feature-icon">
-                    ✓
-                </div>
-
-
-                <h3>
-                    Structured Results
-                </h3>
-
-
-                <p>
-
-                    Important report information can be organized
-                    into readable sections.
-
-                </p>
-
-            </div>
-
-
-
-            <div class="feature">
-
-
-                <div class="feature-icon">
-                    !
-                </div>
-
-
-                <h3>
-                    Educational Information
-                </h3>
-
-
-                <p>
-
-                    Medify is intended to provide educational
-                    information and does not replace professional
-                    medical advice.
-
-                </p>
-
-            </div>
-
-        </section>
-
+          <p>
+            Medify is intended to provide educational information and does not
+            replace professional medical advice.
+          </p>
+        </div>
+      </section>
     </main>
-
-
 
     <!-- =========================================================
          FOOTER
     ========================================================= -->
 
     <footer>
-
-        Medify provides educational information based on
-        uploaded reports. It does not replace professional
-        medical advice, diagnosis, or treatment.
-
+      Medify provides educational information based on uploaded reports. It does
+      not replace professional medical advice, diagnosis, or treatment.
     </footer>
-
-
 
     <!-- =========================================================
          JAVASCRIPT
     ========================================================= -->
 
     <script>
-
-
-        /* =====================================================
+      /* =====================================================
            THEME
         ====================================================== */
 
-        const themeButton =
-            document.getElementById("themeButton");
+      const themeButton = document.getElementById("themeButton");
 
+      const savedTheme = localStorage.getItem("medify-theme");
 
-        const savedTheme =
-            localStorage.getItem("medify-theme");
+      if (savedTheme === "dark") {
+        document.body.classList.add("dark");
 
+        themeButton.textContent = "☾";
+      }
 
-        if (savedTheme === "dark") {
+      themeButton.addEventListener("click", function () {
+        document.body.classList.toggle("dark");
 
-            document.body.classList.add("dark");
+        const darkMode = document.body.classList.contains("dark");
 
-            themeButton.textContent = "☾";
+        localStorage.setItem("medify-theme", darkMode ? "dark" : "light");
 
-        }
+        themeButton.textContent = darkMode ? "☾" : "☀";
+      });
 
-
-        themeButton.addEventListener(
-            "click",
-            function () {
-
-
-                document.body.classList.toggle("dark");
-
-
-                const darkMode =
-                    document.body.classList.contains("dark");
-
-
-                localStorage.setItem(
-                    "medify-theme",
-                    darkMode
-                        ? "dark"
-                        : "light"
-                );
-
-
-                themeButton.textContent =
-                    darkMode
-                        ? "☾"
-                        : "☀";
-
-            }
-        );
-
-
-
-        /* =====================================================
+      /* =====================================================
            MINIMIZE NAVBAR ON SCROLL
         ====================================================== */
 
-        const navbar =
-            document.getElementById("navbar");
+      const navbar = document.getElementById("navbar");
 
-
-        function handleNavbarScroll() {
-
-            if (window.scrollY > 80) {
-
-                navbar.classList.add("scrolled");
-
-            } else {
-
-                navbar.classList.remove("scrolled");
-
-            }
-
+      function handleNavbarScroll() {
+        if (window.scrollY > 80) {
+          navbar.classList.add("scrolled");
+        } else {
+          navbar.classList.remove("scrolled");
         }
+      }
 
+      /* Run once when page loads */
 
-        /* Run once when page loads */
+      handleNavbarScroll();
 
-        handleNavbarScroll();
+      /* Listen for scrolling */
 
-
-        /* Listen for scrolling */
-
-        window.addEventListener(
-            "scroll",
-            handleNavbarScroll,
-            { passive: true }
-        );
-
-
+      window.addEventListener("scroll", handleNavbarScroll, { passive: true });
     </script>
-
-
-</body>
+  </body>
 </html>
