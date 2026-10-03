@@ -809,10 +809,64 @@
           width: 100%;
         }
       }
+
+      /* =========================================================
+   ANALYSIS → RESULTS ENTRANCE
+========================================================= */
+
+      body.results-enter {
+        overflow-x: hidden;
+      }
+
+      body.results-enter .navbar {
+        opacity: 0;
+        transform: translateY(-14px);
+        animation: resultsNavbarIn 0.55s cubic-bezier(0.4, 0, 0.2, 1) 0.05s
+          forwards;
+      }
+
+      body.results-enter .results-main {
+        opacity: 0;
+        transform: translateY(20px) scale(0.985);
+
+        animation: resultsContentIn 0.65s cubic-bezier(0.4, 0, 0.2, 1) 0.12s
+          forwards;
+      }
+
+      @keyframes resultsNavbarIn {
+        from {
+          opacity: 0;
+          transform: translateY(-14px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes resultsContentIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px) scale(0.985);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
     </style>
   </head>
 
   <body>
+    <script>
+      if (sessionStorage.getItem("medifyAnalysisTransition") === "true") {
+        document.body.classList.add("results-enter");
+
+        sessionStorage.removeItem("medifyAnalysisTransition");
+      }
+    </script>
     <header class="navbar" id="navbar">
       <div class="nav-container">
         <a href="index.html" class="logo" aria-label="Medify home">

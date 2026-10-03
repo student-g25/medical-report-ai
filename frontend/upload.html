@@ -2202,6 +2202,172 @@
           width: 100%;
         }
       }
+
+      /* =========================================================
+   SMOOTH ANALYSIS STAGE TRANSITIONS
+========================================================= */
+
+      .stage {
+        position: relative;
+        overflow: hidden;
+
+        transform: translateY(0) scale(1);
+
+        transition:
+          transform 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+          border-color 0.45s ease,
+          box-shadow 0.45s ease,
+          background 0.45s ease,
+          opacity 0.45s ease;
+      }
+
+      /* =========================================================
+   ACTIVE STAGE
+========================================================= */
+
+      .stage.active {
+        transform: translateY(-3px) scale(1.015);
+
+        border-color: rgba(74, 224, 255, 0.65);
+
+        box-shadow:
+          0 0 30px rgba(55, 210, 255, 0.13),
+          inset 0 0 20px rgba(55, 210, 255, 0.03);
+      }
+
+      /* Animated light sweep across active card */
+
+      .stage.active::after {
+        content: "";
+
+        position: absolute;
+
+        top: 0;
+        bottom: 0;
+        left: -100%;
+
+        width: 55%;
+
+        pointer-events: none;
+
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(91, 229, 255, 0.12),
+          transparent
+        );
+
+        animation: stageSweep 1.8s ease-in-out infinite;
+      }
+
+      /* =========================================================
+   COMPLETED STAGE
+========================================================= */
+
+      .stage.done {
+        transform: translateY(0) scale(1);
+
+        border-color: rgba(74, 224, 255, 0.3);
+
+        background: rgba(55, 134, 163, 0.07);
+      }
+
+      /* Completed stage = checkmark */
+
+      .stage.done .stage-loader {
+        position: relative;
+
+        animation: none;
+
+        border: 2px solid #4de5a9;
+
+        opacity: 1;
+      }
+
+      .stage.done .stage-loader::after {
+        content: "✓";
+
+        position: absolute;
+
+        inset: 0;
+
+        display: flex;
+
+        align-items: center;
+        justify-content: center;
+
+        color: #4de5a9;
+
+        font-size: 10px;
+        font-weight: 800;
+
+        line-height: 1;
+      }
+
+      /* =========================================================
+   ACTIVE STAGE SPINNER
+========================================================= */
+
+      .stage.active .stage-loader {
+        border: 2px solid rgba(52, 83, 106, 0.65);
+
+        border-top-color: #4de5ff;
+
+        box-shadow: 0 0 10px rgba(77, 229, 255, 0.25);
+
+        animation: spin 0.8s linear infinite;
+      }
+
+      /* =========================================================
+   STAGE LIGHT SWEEP
+========================================================= */
+
+      @keyframes stageSweep {
+        0% {
+          left: -100%;
+        }
+
+        100% {
+          left: 160%;
+        }
+      }
+
+      /* =========================================================
+   ANALYSIS → RESULTS TRANSITION
+========================================================= */
+
+      .analysis-screen {
+        opacity: 1;
+        transform: scale(1);
+        transition:
+          opacity 0.55s cubic-bezier(0.4, 0, 0.2, 1),
+          transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .analysis-screen.leaving {
+        opacity: 0;
+        transform: scale(1.035);
+        pointer-events: none;
+      }
+
+      .analysis-screen.leaving .analysis-title,
+      .analysis-screen.leaving .analysis-visual,
+      .analysis-screen.leaving .analysis-stages,
+      .analysis-screen.leaving .analysis-tip {
+        opacity: 0;
+        transform: translateY(-12px);
+        transition:
+          opacity 0.35s ease,
+          transform 0.45s ease;
+      }
+
+      .analysis-screen.leaving .analysis-header {
+        opacity: 0;
+        transform: translateY(-8px);
+        transition:
+          opacity 0.35s ease,
+          transform 0.45s ease;
+      }
     </style>
   </head>
 
