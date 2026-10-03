@@ -156,6 +156,8 @@ class TestExplanation(BaseModel):
 
     status: str
 
+    user_friendly_status: str
+
     simple_explanation: str
 
 
@@ -867,6 +869,55 @@ Example style:
 
 Do NOT copy these examples unless the uploaded report
 actually contains those metrics.
+
+=========================================================
+USER-FRIENDLY STATUS
+=========================================================
+
+For EVERY verified test, provide a concise
+user_friendly_status.
+
+This should explain the result in simple language by
+comparing the reported value with the reference range
+supplied by THIS report.
+
+Examples:
+
+If the status is "above stated reference range":
+
+"Your Blood Urea is above the reference range."
+
+If the status is "below stated reference range":
+
+"Your Hemoglobin is below the reference range."
+
+If the status is "within stated reference range":
+
+"Your Vitamin B12 is within the reference range."
+
+Rules:
+
+1. Use the actual test name.
+
+2. Use ONLY the verified status and reference range.
+
+3. Do not diagnose any disease.
+
+4. Do not speculate about the cause.
+
+5. Do not recommend medication or treatment.
+
+6. Do not change or reinterpret the reported value.
+
+7. Keep the sentence short, clear, and easy to understand.
+
+8. Do not use words such as "disease", "dangerous",
+   "serious", or "normal" unless they are explicitly
+   supported by the report.
+
+The purpose is only to help the user understand whether
+their reported value is above, below, or within the
+reference range provided by the report.
 
 
 =========================================================
