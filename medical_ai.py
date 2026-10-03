@@ -911,6 +911,19 @@ Rules:
 
 7. Keep the sentence short, clear, and easy to understand.
 
+8.Use grammatically correct singular/plural agreement
+with the test name.
+
+    Examples:
+
+    "Your Hemoglobin is within the reference range."
+
+    "Your Monocytes are within the reference range."
+
+    "Your Platelet Count is above the reference range."
+
+    Do not blindly use "is" for every test.
+
 8. Do not use words such as "disease", "dangerous",
    "serious", or "normal" unless they are explicitly
    supported by the report.

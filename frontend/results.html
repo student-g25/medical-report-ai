@@ -509,6 +509,14 @@
         font-size: 14px;
       }
 
+      body.dark .explanation {
+        color: #aebbd3;
+      }
+
+      body.dark .explanation p {
+        color: #aebbd3 !important;
+      }
+
       .explanation strong {
         display: block;
 
@@ -1203,7 +1211,21 @@
                 <div class="section-title">
 
                     <div class="section-icon">
-                        ${escapeHTML(section.icon || "🧪")}
+                        ${
+                          {
+                            blood: "🩸",
+                            immune: "🛡️",
+                            glucose: "🩸",
+                            vitamins: "💊",
+                            kidney: "🫘",
+                            electrolytes: "⚡",
+                            liver: "🫀",
+                            thyroid: "🦋",
+                            hormones: "🧬",
+                            urine: "🧪",
+                            lipid: "🫀",
+                          }[String(section.icon || "").toLowerCase()] || "🧪"
+                        }
                     </div>
 
                     ${escapeHTML(section.title || "Tests")}
