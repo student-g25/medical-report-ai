@@ -605,6 +605,15 @@ async function analyzeReport() {
       analysisScreen.classList.add("leaving");
     }
 
+    /* Preserve the currently selected theme during navigation */
+    const currentTheme = document.body.classList.contains("dark")
+      ? "dark"
+      : "light";
+
+    localStorage.setItem("medify-theme", currentTheme);
+
+    sessionStorage.setItem("medifyTheme", currentTheme);
+
     /*
      * Store a flag so results.html knows that it was
      * opened directly from the analysis experience.

@@ -861,9 +861,20 @@
 
   <body>
     <script>
+      /* Restore theme before the Results page is displayed */
+      const resultTheme =
+        sessionStorage.getItem("medifyTheme") ||
+        localStorage.getItem("medify-theme");
+
+      if (resultTheme === "dark") {
+        document.body.classList.add("dark");
+      }
+
+      sessionStorage.removeItem("medifyTheme");
+
+      /* Preserve the Analysis → Results entrance transition */
       if (sessionStorage.getItem("medifyAnalysisTransition") === "true") {
         document.body.classList.add("results-enter");
-
         sessionStorage.removeItem("medifyAnalysisTransition");
       }
     </script>
