@@ -180,15 +180,11 @@ AI-generated explanations can still contain errors. Image quality, ambiguous lay
 
 ### Frontend
 
-Vercel:
-
-`https://medical-report-ai-frontend.vercel.app`
+[Vercel — Medify Frontend](https://medical-report-ai-frontend.vercel.app)
 
 ### Backend
 
-Render:
-
-`https://medical-report-ai-a6s6.onrender.com`
+[Render — Medify API](https://medical-report-ai-a6s6.onrender.com)
 
 The frontend communicates with the deployed FastAPI backend for report analysis.
 
@@ -213,6 +209,12 @@ Structured JSON response
       ↓
 Results dashboard
 ```
+
+## Project Links
+
+- [Live Website](https://medical-report-ai-frontend.vercel.app)
+- [GitHub Repository](https://github.com/student-g25/medical-report-ai)
+- [Backend API](https://medical-report-ai-a6s6.onrender.com)
 
 ## License
 
